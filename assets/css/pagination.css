@@ -80,4 +80,5 @@
 .pagination > li > span {
   line-height: 28px;
   padding: 0 8px;
+  background-color: inherit;
 }

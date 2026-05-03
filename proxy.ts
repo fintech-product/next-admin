@@ -6,6 +6,11 @@ export function proxy(request: NextRequest) {
   const headers = new Headers(request.headers)
   headers.set("x-current-path", request.nextUrl.pathname)
 
+  const url = new URL(request.url)
+  const lang = url.searchParams.get("lang")
+  if (lang) {
+    headers.set("x-language", lang)
+  }
   return NextResponse.next({
     request: {
       headers,

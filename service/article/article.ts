@@ -32,12 +32,12 @@ export interface ArticleFilter extends Filter {
 
 export interface ArticleRepository {
   search(filter: ArticleFilter, limit: number, page?: number, fields?: string[]): Promise<SearchResult<Article>>
-  load(id: string, userId?: string): Promise<Article | null>
+  load(slug: string, userId?: string): Promise<Article | null>
   getIdBySlug(slug: string): Promise<string>
 }
 export interface ArticleService {
   search(filter: ArticleFilter, limit: number, page?: number, fields?: string[]): Promise<SearchResult<Article>>
-  load(id: string, userId?: string): Promise<Article | null>
+  load(slug: string, userId?: string): Promise<Article | null>
   getIdBySlug(slug: string): Promise<string>
   getRateSummary(id: string): Promise<RateSummary>
   save(userId: string, id: string): Promise<number>

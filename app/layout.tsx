@@ -1,13 +1,8 @@
 import "@assets/css/globals.css"
 import LayoutPage from "@components/layout"
-import { headers } from "next/headers"
 import Script from "next/script"
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const headerList = await headers()
-  const pathname = headerList.get("x-current-path")
-  const hasLayout = pathname && !pathname.endsWith("/login")
-
   return (
     <html lang="en">
       <head>
@@ -42,8 +37,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           </div>
         </div>
         <Script src="/static/script.js"></Script>
-        {hasLayout && <LayoutPage>{children}</LayoutPage>}
-        {!hasLayout && <>{children}</>}
+        <LayoutPage>{children}</LayoutPage>
       </body>
     </html>
   )

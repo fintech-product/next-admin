@@ -7,25 +7,25 @@ export const vi = {
   status_changing: "Set Status to",
 
   user_id: "User Id",
-  username: "User Name",
+  username: "Tên người dùng",
   email: "Email",
-  password: "Password",
+  password: "Mật khẩu",
   passcode: "Verification Code",
   contact: "Contact",
 
-  signin: "Sign in",
+  signin: "Đăng nhập",
 
-  signin_remember_me: "Remember Me",
+  signin_remember_me: "Lưu đăng nhập",
   signin_forgot_password: "Forgot my password",
 
   button_signup: "Sign up",
-  button_signin: "Sign in",
+  button_signin: "Đăng nhập",
   button_signout: "Sign out",
 
   msg_account_reactivated: "Your account has been reactivated.",
   msg_password_expired_soon: "Your password will be expired in {0} day(s). Please change your password soon.",
 
-  fail_authentication: "Your username or password is invalid. Please try again.",
+  fail_authentication: "Tên người dùng hoặc mật khẩu sai.",
   fail_unexisted_password: "The password does not exist in the system. Please contact the administrator.",
   fail_wrong_password: "The password is not correct. Please try again.",
   fail_access_time_locked: "You are now allowed to sign in this time. Please contact the administrator.",
