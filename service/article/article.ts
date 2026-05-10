@@ -1,6 +1,4 @@
 import { Attributes, Filter, SearchResult, TimeRange } from "onecore"
-import { RateSummary } from "../shared/rate"
-import { RateFilter, Rate as SearchRate } from "../shared/rates"
 
 export interface Article {
   id: string
@@ -33,16 +31,10 @@ export interface ArticleFilter extends Filter {
 export interface ArticleRepository {
   search(filter: ArticleFilter, limit: number, page?: number, fields?: string[]): Promise<SearchResult<Article>>
   load(slug: string, userId?: string): Promise<Article | null>
-  getIdBySlug(slug: string): Promise<string>
 }
 export interface ArticleService {
   search(filter: ArticleFilter, limit: number, page?: number, fields?: string[]): Promise<SearchResult<Article>>
   load(slug: string, userId?: string): Promise<Article | null>
-  getIdBySlug(slug: string): Promise<string>
-  getRateSummary(id: string): Promise<RateSummary>
-  save(userId: string, id: string): Promise<number>
-  remove(userId: string, id: string): Promise<number>
-  searchRates(filter: RateFilter, limit: number, page?: number | string, fields?: string[]): Promise<SearchResult<SearchRate>>
 }
 
 export const Published = "P"
@@ -86,11 +78,22 @@ export const articleModel: Attributes = {
     length: 400,
     noupdate: true,
   },
+
+  createdBy: {
+    column: "created_by",
+    noupdate: true,
+  },
   createdAt: {
     column: "created_at",
     type: "datetime",
     noupdate: true,
-    createdAt: true,
+  },
+  updatedBy: {
+    column: "updated_by",
+  },
+  updatedAt: {
+    column: "updated_at",
+    type: "datetime",
   },
   savedAt: {
     column: "saved_at",

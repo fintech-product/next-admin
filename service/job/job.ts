@@ -7,6 +7,7 @@ export interface Job {
   description: string
   publishedAt?: Date
   expiredAt?: Date
+  company?: string
   position?: string
   quantity?: number
   location?: string
@@ -66,6 +67,9 @@ export const jobModel: Attributes = {
   expiredAt: {
     column: "expired_at",
     type: "datetime",
+  },
+  company: {
+    length: 40,
   },
   position: {
     length: 100,

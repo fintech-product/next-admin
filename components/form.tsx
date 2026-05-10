@@ -1,6 +1,7 @@
-'use client'
+"use client"
 
-import { ReactNode } from "react"
+import { FocusEvent, FocusEventHandler, ReactNode } from "react"
+import { addClass, addErrorMessage, getContainer, isValidPattern, removeClasses, removeError } from "./client-script"
 
 interface Props {
   type?: string
@@ -10,121 +11,128 @@ interface Props {
   className?: string
   pattern?: string
   defaultValue?: string | number
+  value?: string | number
   placeholder?: string
   required?: boolean
+  requiredError?: string
+  error?: string
   maxLength?: number
   min?: string | number
   max?: string | number
   readOnly?: boolean
-  error?: string
   children?: ReactNode
+  onFocus?: FocusEventHandler<HTMLInputElement>
+  onBlur?: FocusEventHandler<HTMLInputElement>
 }
-export default function Input({ type, id, name, dataType, className, pattern, defaultValue, placeholder, maxLength, min, max, required, readOnly, error, children }: Props) {
+export default function Input({
+  type,
+  id,
+  name,
+  dataType,
+  className,
+  defaultValue,
+  value,
+  placeholder,
+  required,
+  requiredError,
+  pattern,
+  error,
+  maxLength,
+  min,
+  max,
+  readOnly,
+  children,
+  onBlur,
+  onFocus,
+}: Props) {
+  const onFocusFn = onFocus ? onFocus : materialOnFocus
+  const onBlurFn = onBlur ? onBlur : (e: FocusEvent<HTMLInputElement>) => checkOnBlur(e, required, requiredError, pattern, error)
   return (
     <input
-        type={type}
-        id={id}
-        name={name}
-        className={className}
-        pattern={pattern}
-        data-type={dataType}
-        data-error={error}
-        defaultValue={defaultValue}
-        maxLength={maxLength}
-        min={min}
-        max={max}
-        readOnly={readOnly}
-        required={required}
-        placeholder={placeholder}
-      >{children}</input>
-  );
+      type={type}
+      id={id}
+      name={name}
+      className={className}
+      pattern={pattern}
+      data-type={dataType}
+      data-error={error}
+      data-required-error={requiredError}
+      defaultValue={defaultValue}
+      value={value}
+      maxLength={maxLength}
+      min={min}
+      max={max}
+      readOnly={readOnly}
+      required={required}
+      placeholder={placeholder}
+      onFocus={onFocusFn}
+      onBlur={onBlurFn}
+    >
+      {children}
+    </input>
+  )
 }
-export function removeSeparators(input?: string | null): string {
-  if (!input) return ""
 
-  const len = input.length
-  const buffer = new Array<string>(len)
-  let write = 0
-
-  for (let i = 0; i < len; i++) {
-    const c = input[i]
-
-    // skip unwanted characters
-    if (
-      c === " " || // normal space
-      c === "\u00A0" || // non-breaking space
-      c === "," ||
-      c === "." ||
-      c === "٬" || // Arabic thousands separator
-      c === "$" ||
-      c === "€" ||
-      c === "£" ||
-      c === "¥"
-    ) {
-      continue
-    }
-
-    buffer[write++] = c
-  }
-
-  // Avoid creating a large intermediate array via slice
-  return write === len ? input : buffer.slice(0, write).join("")
-}
-export function formatInteger(v?: number | null, groupSeparator: string = ","): string {
-  if (v == null || !Number.isFinite(v)) {
-    return ""
-  }
-
-  const isNegative = v < 0
-  let n = Math.abs(Math.trunc(v))
-
-  // Fast path for small numbers (no separator needed)
-  if (n < 1000) {
-    return isNegative ? `-${n}` : `${n}`
-  }
-
-  let result = ""
-  let count = 0
-
-  while (n > 0) {
-    const digit = n % 10
-    n = (n / 10) | 0 // faster floor for positive integers
-
-    if (count > 0 && count % 3 === 0) {
-      result = groupSeparator + result
-    }
-
-    result = digit + result
-    count++
-  }
-
-  return isNegative ? `-${result}` : result
-}
-export function formatNumber(v?: number | null, scale?: number, d?: string | null, g?: string): string {
-  if (v == null) {
-    return ""
-  }
-  if (!d && !g) {
-    g = ","
-    d = "."
-  } else if (!g) {
-    g = d === "," ? "." : ","
-  }
-  const s = scale === 0 || scale ? v.toFixed(scale) : v.toString()
-  const x = s.split(".", 2)
-  const y = x[0]
-  const arr: string[] = []
-  const len = y.length - 1
-  for (let k = 0; k < len; k++) {
-    arr.push(y[len - k])
-    if ((k + 1) % 3 === 0) {
-      arr.push(g)
-    }
-  }
-  arr.push(y[0])
-  if (x.length === 1) {
-    return arr.reverse().join("")
+export function checkOnBlur(e: FocusEvent<HTMLInputElement>, required?: boolean, requiredError?: string, patern?: string, paternError?: string) {
+  materialOnBlur(e)
+  const input = e.target
+  removeError(input)
+  if (required) {
+    const err = requiredError ? requiredError : "Required field"
+    checkRequired(e, err, patern, paternError)
   } else {
-    return arr.reverse().join("") + d + x[1]
+    debugger
+    if (patern) {
+      console.log("patern " + patern)
+      if (!isValidPattern(input.value, patern)) {
+        const error = paternError ? paternError : "Pattern Error"
+        addErrorMessage(input, error)
+        return
+      }
+    }
+    removeError(input)
   }
+}
+export function checkRequired(e: FocusEvent<HTMLInputElement>, msg: string, patern?: string, paternError?: string) {
+  materialOnBlur(e)
+  const input = e.target
+  removeError(input)
+  if (input.value === "") {
+    addErrorMessage(input, msg)
+  } else {
+    if (patern) {
+      if (!isValidPattern(input.value, patern)) {
+        const error = paternError ? paternError : "Pattern Error"
+        addErrorMessage(input, error)
+        return
+      }
+    }
+    removeError(input)
+  }
+}
+
+export function inputOnFocus(e: FocusEvent<HTMLInputElement>) {
+  removeError(e.target)
+}
+export function requiredOnFocus(e: FocusEvent<HTMLInputElement>) {
+  removeError(e.target)
+}
+export function materialOnFocus(e: FocusEvent<HTMLInputElement>) {
+  const ele = e.currentTarget as HTMLInputElement
+  if (ele.disabled || ele.readOnly) {
+    return
+  }
+  setTimeout(() => {
+    if (ele.nodeName === "INPUT" || ele.nodeName === "SELECT" || ele.nodeName === "TEXTAREA") {
+      addClass(getContainer(ele), "focused")
+    }
+  }, 0)
+}
+export function materialOnBlur(e: FocusEvent<HTMLInputElement>): void {
+  const ele = e.currentTarget as HTMLInputElement
+  setTimeout(() => {
+    if (ele.nodeName === "INPUT" || ele.nodeName === "SELECT" || ele.nodeName === "TEXTAREA") {
+      removeClasses(getContainer(ele), ["focused", "focus"])
+    }
+  }, 0)
 }

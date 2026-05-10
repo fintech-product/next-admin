@@ -1,4 +1,6 @@
-import { getLang, getResource } from "@resources"
+import { formatText } from "@components/client-script"
+import Input from "@components/form"
+import { email, getLang, getResource } from "@resources"
 import { Contact, contactModel, getContactService } from "@service/contact"
 import { redirect } from "next/navigation"
 import { validate } from "validation-core"
@@ -46,50 +48,82 @@ export default async function ContactForm({ searchParams }: { searchParams: Prom
       <div className="row">
         <label className="col s12 m6 required">
           {resource.fullname}
-          <input type="text" id="name" name="name" defaultValue={contact.name || ""} maxLength={100} required={true} placeholder={resource.fullname} />
+          <Input
+            type="text"
+            id="name"
+            name="name"
+            defaultValue={contact.name}
+            maxLength={100}
+            required={true}
+            requiredError={formatText(resource.error_required, resource.fullname)}
+            placeholder={resource.fullname}
+          />
         </label>
         <label className="col s12 m6 required">
           {resource.country}
-          <input type="text" id="country" name="country" defaultValue={contact.country || ""} maxLength={100} required={true} placeholder={resource.country} />
+          <Input
+            type="text"
+            id="country"
+            name="country"
+            defaultValue={contact.country}
+            maxLength={100}
+            required={true}
+            requiredError={formatText(resource.error_required, resource.country)}
+            placeholder={resource.country}
+          />
         </label>
         <label className="col s12 m6 required">
           {resource.company}
-          <input type="text" id="company" name="company" defaultValue={contact.company || ""} maxLength={100} required={true} placeholder={resource.company} />
+          <Input
+            type="text"
+            id="company"
+            name="company"
+            defaultValue={contact.company}
+            maxLength={100}
+            required={true}
+            requiredError={formatText(resource.error_required, resource.company)}
+            placeholder={resource.company}
+          />
         </label>
         <label className="col s12 m6 required">
           {resource.job_title}
-          <input
+          <Input
             type="text"
             id="jobTitle"
             name="jobTitle"
-            data-type="jobTitle"
-            defaultValue={contact.jobTitle || ""}
+            defaultValue={contact.jobTitle}
             maxLength={100}
+            required={true}
+            requiredError={formatText(resource.error_required, resource.job_title)}
             placeholder={resource.job_title}
           />
         </label>
         <label className="col s12 m6 required">
           {resource.email}
-          <input
+          <Input
             type="text"
             id="email"
             name="email"
             data-type="email"
-            defaultValue={contact.email || ""}
-            required={true}
+            defaultValue={contact.email}
             maxLength={120}
+            required={true}
+            requiredError={formatText(resource.error_required, resource.email)}
+            pattern={email}
+            error={formatText(resource.error_email, resource.email)}
             placeholder={resource.email}
           />
         </label>
         <label className="col s12 m6 required">
           {resource.phone}
-          <input
+          <Input
             type="tel"
             id="phone"
             name="phone"
-            defaultValue={formatPhone(contact.phone) || ""}
-            required={true}
+            defaultValue={formatPhone(contact.phone)}
             maxLength={17}
+            required={true}
+            requiredError={formatText(resource.error_required, resource.phone)}
             placeholder={resource.phone}
           />
         </label>

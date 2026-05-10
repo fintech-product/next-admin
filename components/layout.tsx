@@ -1,15 +1,11 @@
 import { Nav } from "@components/nav";
 import { getMenu } from "@lib/menu";
-import { getLangByPath, getResource } from "@resources";
-import { headers } from "next/headers";
+import { getResource } from "@resources";
 import { cloneArray, rebuildPath } from "web-one";
 import { LayoutClient } from "./client";
 import PageHeader from "./page-header";
 
-export default async function LayoutPage({ children }: { children: React.ReactNode }) {
-  const headerList = await headers()
-  const pathname = headerList.get("x-current-path")
-  const lang = getLangByPath(pathname)
+export default async function LayoutPage({ lang, children }: { lang: string; children: React.ReactNode }) {
   const resource = getResource(lang)
   const rootItems = await getMenu()
   const items = lang !== "en" ? cloneArray(rootItems) : rootItems

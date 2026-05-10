@@ -1,8 +1,14 @@
-import "@assets/css/globals.css"
-import LayoutPage from "@components/layout"
-import Script from "next/script"
+import "@assets/css/globals.css";
+import LayoutPage from "@components/layout";
+import { getLangByPath } from "@resources";
+import { headers } from "next/headers";
+import Script from "next/script";
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const headerList = await headers()
+  const pathname = headerList.get("x-current-path")
+  const language = headerList.get("x-language")
+  const lang = language ? language : getLangByPath(pathname)
   return (
     <html lang="en">
       <head>
@@ -37,7 +43,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           </div>
         </div>
         <Script src="/static/script.js"></Script>
-        <LayoutPage>{children}</LayoutPage>
+        <LayoutPage lang={lang}>{children}</LayoutPage>
       </body>
     </html>
   )

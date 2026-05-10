@@ -11,6 +11,8 @@ export const sort = "sort"
 export const page = "page"
 export const limit = "limit"
 
+export const email = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,4})$"
+
 export interface Resources {
   [key: string]: StringMap
 }
@@ -40,7 +42,7 @@ export function isDefaultLang(lang?: string): boolean {
   return !lang || lang === "en"
 }
 export function getLangSearch(lang?: string): string {
-  return (!lang || lang === "en") ? "" : `?lang=${lang}`
+  return !lang || lang === "en" ? "" : `?lang=${lang}`
 }
 
 export function getResource(lang?: string | null): StringMap {

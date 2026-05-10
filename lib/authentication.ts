@@ -13,8 +13,7 @@ const authConfig = {
   lockedMinutes: 2,
   maxPasswordFailed: 5,
   account: {
-    displayName: "display_name",
-    dateFormat: "date_format",
+    displayName: "displayname",
   },
   userStatus: {
     activated: "A",
@@ -25,7 +24,7 @@ const authConfig = {
   db: {
     user: "users",
     password: "passwords",
-    id: "id",
+    id: "user_id",
     username: "username",
     status: "status",
     successTime: "success_time",
@@ -34,12 +33,12 @@ const authConfig = {
     lockedUntilTime: "locked_until_time",
   },
   query: `
-    select u.id, u.username, u.display_name, email, u.status, language, dateformat as date_format, u.max_password_age, 
-      p.password, p.success_time, p.fail_time, p.fail_count, p.locked_until_time, p.changed_time
-    from users u
-    inner join passwords p
-      on u.id = p.id
-    where username = $1`,
+      select u.user_id, u.username, u.display_name, email, u.status, u.max_password_age, 
+        p.password, p.success_time, p.fail_time, p.fail_count, p.locked_until_time, p.changed_time
+      from users u
+      inner join passwords p
+        on u.user_id = p.user_id
+      where username = $1`,
   expires: 500,
   template: {
     subject: "Verification Code",
@@ -60,6 +59,7 @@ const map = {
 
 let authenticator: Authenticator<User, string> | undefined
 export function getAuthenticator(): Authenticator<User, string> {
+  console.log("enter getAuthenticator")
   if (!authenticator) {
     const status = initializeStatus(authConfig.status)
     const userRepository = useUserRepository<string, SqlAuthTemplateConfig>(db, authConfig, map)

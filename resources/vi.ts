@@ -53,7 +53,7 @@ export const vi = {
   error_datetimes: "{0} must be an date time array.",
   error_dates: "{0} must be an date array.",
 
-  error_required: "{0} is required.",
+  error_required: "{0} là bắt buộc.",
   error_minlength: "{0} cannot be less than {1} characters.",
   error_maxlength: "{0} cannot be greater than {1} characters.",
 
