@@ -1,25 +1,33 @@
-import { SearchResult } from "onecore"
-import { FollowRepository } from "pg-extension"
-import { User, UserFilter, UserRepository, UserService } from "./user"
+import { nanoid } from "nanoid";
+import { DB, UseCase } from "onecore";
+import { SqlUserRepository } from "./repository";
+import { User, UserFilter, UserRepository, UserService } from "./user";
 
-export class UserUseCase implements UserService {
-  constructor(private repository: UserRepository, private followRepository: FollowRepository<string>) {}
-  search(filter: UserFilter, limit: number, page?: number, fields?: string[]): Promise<SearchResult<User>> {
-    return this.repository.search(filter, limit, page, fields)
+export class UserUseCase extends UseCase<User, string, UserFilter> implements UserService {
+  constructor(protected repository: UserRepository) {
+    super(repository)
+    this.create = this.create.bind(this);
   }
-  load(id: string, userId?: string): Promise<User | null> {
-    return this.repository.load(id, userId)
+  all(): Promise<User[]> {
+    return this.repository.all()
   }
-  getIdBySlug(slug: string): Promise<string> {
-    return this.repository.getIdBySlug(slug)
+  create(user: User): Promise<number> {
+    user.userId = nanoid(10)
+    return this.repository.create(user)
   }
-  follow(id: string, target: string): Promise<number> {
-    return this.followRepository.follow(id, target)
+  getUsersOfRole(roleId: string): Promise<User[]> {
+    return this.repository.getUsersOfRole(roleId)
   }
-  unfollow(id: string, target: string): Promise<number> {
-    return this.followRepository.unfollow(id, target)
+  assign(id: string, roles: string[]): Promise<number> {
+    return this.repository.assign(id, roles)
   }
-  checkFollow(id: string, target: string): Promise<number> {
-    return this.followRepository.checkFollow(id, target).then((result) => (result ? 1 : 0))
+}
+
+let service: UserService | undefined
+export function getUserService(db: DB): UserService {
+  if (!service) {
+    const repo = new SqlUserRepository(db)
+    service = new UserUseCase(repo)
   }
+  return service
 }
