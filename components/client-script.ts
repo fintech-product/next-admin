@@ -1,3 +1,21 @@
+interface Locale {
+  decimalSeparator: string
+  groupSeparator: string
+  currencyCode: string
+  currencySymbol: string
+  currencyPattern: number
+}
+export function getOffset(limit: number, page?: number, firstLimit?: number): number {
+  const p = page && page > 0 ? page : 1
+  if (firstLimit && firstLimit > 0) {
+    const offset = limit * (p - 2) + firstLimit
+    return offset < 0 ? 0 : offset
+  } else {
+    const offset = limit * (p - 1)
+    return offset < 0 ? 0 : offset
+  }
+}
+
 export function findParent(e: HTMLElement | null | undefined, className: string, nodeName?: string): HTMLElement | null {
   if (!e) {
     return null
@@ -271,4 +289,376 @@ export function formatText(...args: any[]): string {
     }
   }
   return formatted
+}
+
+function valueOf(obj: any, key: string): any {
+  const mapper = key.split(".").map((item) => {
+    return item.replace(/\[/g, ".[").replace(/\[|\]/g, "")
+  })
+  const reSplit = mapper.join(".").split(".")
+  return reSplit.reduce((acc, current, index, source) => {
+    const value = getDirectValue(acc, current)
+    if (!value) {
+      source.splice(1)
+    }
+    return value
+  }, obj)
+}
+function getDirectValue(obj: any, key: string): any {
+  if (obj && obj.hasOwnProperty(key)) {
+    return obj[key]
+  }
+  return null
+}
+function setValue(obj: any, key: string, value: any): any {
+  let replaceKey = key.replace(/\[/g, ".[").replace(/\.\./g, ".")
+  if (replaceKey.indexOf(".") === 0) {
+    replaceKey = replaceKey.slice(1, replaceKey.length)
+  }
+  const keys = replaceKey.split(".")
+  let firstKey = keys.shift()
+  if (!firstKey) {
+    return
+  }
+  const isArrayKey = /\[([0-9]+)\]/.test(firstKey)
+  if (keys.length > 0) {
+    const firstKeyValue = obj[firstKey] || {}
+    const returnValue = setValue(firstKeyValue, keys.join("."), value)
+    return setKey(obj, isArrayKey, firstKey, returnValue)
+  }
+  return setKey(obj, isArrayKey, firstKey, value)
+}
+function setKey(_object: any, _isArrayKey: boolean, _key: string, _nextValue: any) {
+  if (_isArrayKey) {
+    if (_object.length > _key) {
+      _object[_key] = _nextValue
+    } else {
+      _object.push(_nextValue)
+    }
+  } else {
+    _object[_key] = _nextValue
+  }
+  return _object
+}
+const r1 = / |,|\$|€|£|¥|'|٬|،| /g
+const r2 = / |\.|\$|€|£|¥|'|٬|،| /g
+function parseDate(v: string, format?: string): Date {
+  if (!format || format.length === 0) {
+    format = "MM/DD/YYYY"
+  } else {
+    format = format.toUpperCase()
+  }
+  const dateItems = format.split(/\/|\.| |-/)
+  const valueItems = v.split(/\/|\.| |-/)
+  let imonth = dateItems.indexOf("M")
+  let iday = dateItems.indexOf("D")
+  let iyear = dateItems.indexOf("YYYY")
+  if (imonth === -1) {
+    imonth = dateItems.indexOf("MM")
+  }
+  if (iday === -1) {
+    iday = dateItems.indexOf("DD")
+  }
+  if (iyear === -1) {
+    iyear = dateItems.indexOf("YY")
+  }
+  const month = parseInt(valueItems[imonth], 10) - 1
+  let year = parseInt(valueItems[iyear], 10)
+  if (year < 100) {
+    year += 2000
+  }
+  const day = parseInt(valueItems[iday], 10)
+  return new Date(year, month, day)
+}
+function getDecimalSeparator(ele: HTMLInputElement): string {
+  let separator = ele.getAttribute("data-decimal-separator")
+  if (!separator) {
+    const form = ele.form
+    if (form) {
+      separator = form.getAttribute("data-decimal-separator")
+    }
+  }
+  return separator ? separator : "."
+}
+export function getGroupSeparator(ele: HTMLInputElement): string {
+  let separator = ele.getAttribute("data-group-separator")
+  if (!separator) {
+    const form = ele.form
+    if (form) {
+      separator = form.getAttribute("data-group-separator")
+    }
+  }
+  return separator === "." ? "." : ","
+}
+export function getChipsByElement(container?: Element | null): string[] {
+  if (container) {
+    return Array.from(container.querySelectorAll<HTMLElement>(".chip")).map((chip) => {
+      const v = chip.getAttribute("data-value")
+      return v ? v.trim() : ""
+    })
+  } else {
+    return []
+  }
+}
+export function getChipObjects(container: Element | null | undefined, value: string, text?: string | null, star?: string | null): any[] {
+  if (container) {
+    return Array.from(container.querySelectorAll<HTMLElement>(".chip")).map((chip) => {
+      const obj: any = {}
+      const v = chip.getAttribute("data-value")
+      obj[value] = v ? v.trim() : ""
+
+      if (text) {
+        obj[text] = chip.firstChild?.textContent
+      }
+
+      if (star) {
+        const i = chip.querySelector("i.star.highlight")
+        if (i) {
+          obj[star] = true
+        }
+      }
+
+      return obj
+    })
+  } else {
+    return []
+  }
+}
+export function decode<T>(form: HTMLFormElement, currencySymbol?: string | null): T {
+  const dateFormat = form.getAttribute("data-date-format")
+  const obj = {} as T
+  const len = form.length
+  for (let i = 0; i < len; i++) {
+    const ele = form[i] as HTMLInputElement
+    let name = ele.getAttribute("name")
+    const id = ele.getAttribute("id")
+    let val: any
+    let isDate = false
+    let dataField = ele.getAttribute("data-field")
+    if (dataField && dataField.length > 0) {
+      name = dataField
+    } else if ((!name || name === "") && ele.parentElement && ele.parentElement.classList.contains("DayPickerInput")) {
+      if (ele.parentElement.parentElement) {
+        dataField = ele.parentElement.parentElement.getAttribute("data-field")
+        isDate = true
+        name = dataField
+      }
+    }
+    if (isDate === false && ele.getAttribute("data-type") === "date") {
+      isDate = true
+    }
+    if (name != null && name !== "") {
+      let nodeName = ele.nodeName
+      const type = ele.getAttribute("type")
+      if (nodeName === "INPUT" && type !== null) {
+        nodeName = type.toUpperCase()
+      }
+      if (nodeName !== "BUTTON" && nodeName !== "RESET" && nodeName !== "SUBMIT" && ele.getAttribute("data-skip") !== "true") {
+        switch (type) {
+          case "checkbox":
+            if (id && name !== id) {
+              // obj[name] = !obj[name] ? [] : obj[name];
+              val = valueOf(obj, name) // val = obj[name];
+              if (!val) {
+                val = []
+              }
+              if (ele.checked) {
+                val.push(ele.value)
+                // obj[name].push(ele.value);
+              } else {
+                // tslint:disable-next-line: triple-equals
+                val = val.filter((item: string) => item != ele.value)
+              }
+            } else {
+              val = ele.value !== "on" ? ele.value : ele.checked
+            }
+            setValue(obj, name, val)
+            continue
+          case "radio":
+            if (ele.checked) {
+              val = ele.value.length > 0 ? ele.value : ele.checked
+              setValue(obj, name, val)
+            }
+            continue
+          case "date":
+            val = ele.value.length === 10 ? ele.value : null
+            break
+          case "datetime-local":
+            if (ele.value.length > 0) {
+              try {
+                val = new Date(ele.value) // DateUtil.parse(ele.value, 'YYYY-MM-DD');
+              } catch (err) {
+                val = null
+              }
+            } else {
+              val = null
+            }
+            break
+          default:
+            val = ele.value
+        }
+        if (isDate && dateFormat && dateFormat.length > 0) {
+          const d = parseDate(val, dateFormat)
+          val = d.toString() === "Invalid Date" ? null : d
+        }
+        const datatype = ele.getAttribute("data-type")
+        let v: any = ele.value
+        let symbol: string | null | undefined
+        if (datatype === "currency" || datatype === "string-currency") {
+          symbol = ele.getAttribute("data-currency-symbol")
+          if (!symbol) {
+            symbol = currencySymbol
+          }
+          if (symbol && symbol.length > 0 && v.indexOf(symbol) >= 0) {
+            v = v.replace(symbol, "")
+          }
+        }
+        if (type === "number" || datatype === "currency" || datatype === "integer" || datatype === "number") {
+          const decimalSeparator = getDecimalSeparator(ele)
+          v = decimalSeparator === "," ? v.replace(r2, "") : v.replace(r1, "")
+          val = isNaN(v) ? null : parseFloat(v)
+        }
+        setValue(obj, name, val) // obj[name] = val;
+      }
+    }
+  }
+  form.querySelectorAll(".chip-list").forEach((divChip) => {
+    const name = divChip.getAttribute("data-name")
+    if (name && name.length > 0) {
+      const dv = divChip.getAttribute("data-value")
+      if (dv) {
+        const v = getChipObjects(divChip, dv, divChip.getAttribute("data-text"), divChip.getAttribute("data-star"))
+        setValue(obj, name, v)
+      } else {
+        const v = getChipsByElement(divChip)
+        setValue(obj, name, v)
+      }
+    }
+  })
+  return obj
+}
+
+export function validateElement(ele: HTMLInputElement, locale?: Locale | string | null, includeReadOnly?: boolean): string | null {
+  if (!ele) {
+    return null
+  }
+
+  if (!ele || (ele.readOnly && includeReadOnly === false) || ele.disabled || ele.hidden || ele.style.display === "none") {
+    return null
+  }
+  let nodeName = ele.nodeName
+  if (nodeName === "INPUT") {
+    const type = ele.getAttribute("type")
+    if (type !== null) {
+      nodeName = type.toUpperCase()
+    }
+  }
+  if (ele.tagName === "SELECT") {
+    nodeName = "SELECT"
+  }
+  if (nodeName === "BUTTON" || nodeName === "RESET" || nodeName === "SUBMIT") {
+    return null
+  }
+
+  const parent = getContainer(ele)
+  if (parent) {
+    if (parent.hidden || parent.style.display === "none") {
+      return null
+    } else {
+      const p = findParent(parent, "SECTION")
+      if (p && (p.hidden || p.style.display === "none")) {
+        return null
+      }
+    }
+  }
+
+  let value = ele.value
+
+  const label = getLabel(ele)
+  let msg0 = checkRequired(ele, label, resource)
+  if (msg0) {
+    return msg0
+  }
+
+  if (!value || value === "") {
+    return null
+  }
+
+  let ctype = ele.getAttribute("type")
+  if (ctype) {
+    ctype = ctype.toLowerCase()
+  }
+  let datatype = ele.getAttribute("data-type")
+  if (ctype === "email") {
+    datatype = "email"
+  } else if (ctype === "url") {
+    datatype = "url"
+  } else if (!datatype) {
+    if (ctype === "number") {
+      datatype = "number"
+    } else if (ctype === "date" || ctype === "datetime-local") {
+      datatype = "date"
+    }
+  }
+
+  if (ele.pattern && ele.pattern.length > 0) {
+    let flags = ele.getAttribute("data-flags")
+    if (!isValidPattern(value, ele.pattern, flags)) {
+      let msg = ele.getAttribute("data-error-message")
+      if (!msg) {
+        msg = "Pattern Error"
+      }
+      addErrorMessage(ele, msg)
+      return msg
+    }
+  }
+  removeError(ele)
+  return null
+}
+export function validateForm(form?: HTMLFormElement, locale?: Locale | string | null, focusFirst?: boolean, scroll?: boolean, includeReadOnly?: boolean): boolean {
+  if (!form) {
+    return true
+  }
+  let valid = true
+  let errorCtrl: HTMLInputElement | null = null
+  let errorShown = false
+  const divMessage = form.querySelector(".message")
+  const len = form.length
+  for (let i = 0; i < len; i++) {
+    const ele = form[i] as HTMLInputElement
+    let type = ele.getAttribute("type")
+    if (type != null) {
+      type = type.toLowerCase()
+    }
+    if (type === "checkbox" || type === "radio" || type === "submit" || type === "button" || type === "reset") {
+      continue
+    } else {
+      const msg = validateElement(ele, locale, includeReadOnly)
+      if (msg) {
+        if (divMessage && !errorShown) {
+          if (!divMessage.classList.contains("alert-error")) {
+            divMessage.classList.add("alert-error")
+          }
+          errorShown = true
+          divMessage.innerHTML = msg + '<span onclick="clearMessage(event)"></span>'
+        }
+        valid = false
+        if (!errorCtrl) {
+          errorCtrl = ele
+        }
+      } else {
+        removeError(ele)
+      }
+    }
+  }
+  if (focusFirst !== false && !focusFirst) {
+    focusFirst = true
+  }
+  if (errorCtrl !== null && focusFirst === true) {
+    errorCtrl.focus()
+    if (scroll === true) {
+      errorCtrl.scrollIntoView()
+    }
+  }
+  return valid
 }

@@ -115,6 +115,9 @@ export const en = {
 
   keyword: "Keyword",
 
+  display_name: "Display Name",
+  status: "Status",
+
   country: "Country",
   company: "Company",
   email: "Email",

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { MouseEvent, ReactNode } from "react";
 
-export function LayoutClient({ nav, header, children }: { nav: ReactNode; header: ReactNode; children: ReactNode }) {
+export function ClientLayout({ nav, header, children }: { nav: ReactNode; header: ReactNode; children: ReactNode }) {
   const pathname = usePathname()
   const showNav = !pathname.endsWith("/login")
   if (!showNav) {
@@ -25,7 +25,7 @@ export function LayoutClient({ nav, header, children }: { nav: ReactNode; header
   )
 }
 
-export function NavClient({ href, children }: { href: string; children: ReactNode }) {
+export function ClientNav({ href, children }: { href: string; children: ReactNode }) {
   const pathname = usePathname()
   const isActive = pathname === href
   return (

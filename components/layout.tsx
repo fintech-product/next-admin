@@ -1,16 +1,17 @@
 import { Nav } from "@components/nav";
+import { getCurrentUser } from "@lib/account";
 import { getMenu } from "@lib/menu";
 import { getResource } from "@resources";
-import { cloneArray, rebuildPath } from "web-one";
-import { LayoutClient } from "./client";
+import { MenuItem } from "web-one";
+import { ClientLayout } from "./client";
 import PageHeader from "./page-header";
 
 export default async function LayoutPage({ lang, children }: { lang: string; children: React.ReactNode }) {
   const resource = getResource(lang)
-  const rootItems = await getMenu()
-  const items = lang !== "en" ? cloneArray(rootItems) : rootItems
-  if (lang !== "en") {
-    rebuildPath(items, lang)
+  let items: MenuItem[] = []
+  const account = await getCurrentUser()
+  if (account) {
+    items = await getMenu(account.id)
   }
   const pageHeader = <PageHeader resource={resource} />
   const nav = (
@@ -34,8 +35,8 @@ export default async function LayoutPage({ lang, children }: { lang: string; chi
     </>
   )
   return (
-    <LayoutClient nav={nav} header={pageHeader}>
+    <ClientLayout nav={nav} header={pageHeader}>
       {children}
-    </LayoutClient>
+    </ClientLayout>
   )
 }

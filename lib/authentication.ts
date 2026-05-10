@@ -1,4 +1,4 @@
-import { Authenticator, initializeStatus, SqlAuthTemplateConfig, User, useUserRepository } from "authen-service"
+import { Authenticator, initializeStatus, PrivilegeRepository, SqlAuthTemplateConfig, User, useUserRepository } from "authen-service"
 import { compare } from "bcryptjs"
 import { db } from "./db"
 
@@ -44,6 +44,16 @@ const authConfig = {
     subject: "Verification Code",
     body: "%s Use this code for verification. This code will expire in %s minutes",
   },
+  privileges: `
+    select distinct m.module_id as id, m.module_name as name, m.resource_key as resource,
+      m.path, m.icon, m.parent, m.sequence, rm.permissions, m.actions
+    from users u
+      inner join user_roles ur on u.user_id = ur.user_id
+      inner join roles r on ur.role_id = r.role_id
+      inner join role_modules rm on r.role_id = rm.role_id
+      inner join modules m on rm.module_id = m.module_id
+    where u.user_id = $1 and r.status = 'A' and m.status = 'A'
+    order by sequence`
 }
 
 const map = {
@@ -59,11 +69,13 @@ const map = {
 
 let authenticator: Authenticator<User, string> | undefined
 export function getAuthenticator(): Authenticator<User, string> {
-  console.log("enter getAuthenticator")
+  console.log("enter getAuthenticator 0")
   if (!authenticator) {
+    console.log("enter getAuthenticator 1")
     const status = initializeStatus(authConfig.status)
     const userRepository = useUserRepository<string, SqlAuthTemplateConfig>(db, authConfig, map)
-    authenticator = new Authenticator(status, compare, authConfig.account, userRepository, undefined, authConfig.lockedMinutes, authConfig.maxPasswordFailed)
+    const privilegeRepository = new PrivilegeRepository(db.query, authConfig.privileges)
+    authenticator = new Authenticator(status, compare, authConfig.account, userRepository, privilegeRepository.privileges, authConfig.lockedMinutes, authConfig.maxPasswordFailed)
   }
   return authenticator
 }

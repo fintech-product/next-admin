@@ -16,20 +16,16 @@ export default function LoginForm({ lang, resource }: Props) {
 
   const initialState: LoginState = {
     success: false,
-    lang
+    lang,
+    nextUrl: "/login"
   }
   const [state, formAction, pending] = useActionState(loginAction, initialState)
 
   useEffect(() => {
     if (state.success) {
-      // ✅ client-side redirect only on success
-      if (state.lang === "vi") {
-        router.push("/vi/")
-      } else {
-        router.push("/")
-      }
+      router.push(state.nextUrl) // ✅ client-side redirect only on success
     }
-  }, [state.success, router])
+  }, [state.success, state.nextUrl, router])
 
   return (
     <div className="central-full">

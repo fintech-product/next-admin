@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { StringMap } from "onecore"
-import { NavClient, SubList, ToggleMenu } from "./client"
+import { ClientNav, SubList, ToggleMenu } from "./client"
 
 export interface Props {
   items: MenuItem[]
@@ -40,26 +40,26 @@ export function Nav(props: Props) {
               </SubList>
               <ul className="sub-list expanded">
                 {m.children.map((s) => (
-                  <NavClient key={s.path} href={s.path}>
+                  <ClientNav key={s.path} href={s.path}>
                     <Link href={s.path} className="menu-item" prefetch={false}>
                       <i className="material-icons">{s.icon}</i>
                       <span>
                         {getName(s.name, s.resource, props.resource)}
                       </span>
                     </Link>
-                  </NavClient>
+                  </ClientNav>
                 ))}
               </ul>
             </li>
           ) : (
-            <NavClient key={m.path} href={m.path}>
+            <ClientNav key={m.path} href={m.path}>
               <Link href={m.path} className="menu-item" prefetch={false}>
                 <i className="material-icons">{m.icon}</i>
                 <span>
                   {getName(m.name, m.resource, props.resource)}
                 </span>
               </Link>
-            </NavClient>
+            </ClientNav>
           )
         )}
       </ul>

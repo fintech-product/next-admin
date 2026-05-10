@@ -4,6 +4,7 @@ export interface User {
   userId: string
   username: string
   email?: string
+  displayName?: string
   phone?: string
   dateOfBirth?: Date
   roles?: string[]

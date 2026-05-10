@@ -1,5 +1,6 @@
+import { db } from "@lib/db";
 import { nanoid } from "nanoid";
-import { DB, UseCase } from "onecore";
+import { UseCase } from "onecore";
 import { SqlUserRepository } from "./repository";
 import { User, UserFilter, UserRepository, UserService } from "./user";
 
@@ -24,7 +25,7 @@ export class UserUseCase extends UseCase<User, string, UserFilter> implements Us
 }
 
 let service: UserService | undefined
-export function getUserService(db: DB): UserService {
+export function getUserService(): UserService {
   if (!service) {
     const repo = new SqlUserRepository(db)
     service = new UserUseCase(repo)

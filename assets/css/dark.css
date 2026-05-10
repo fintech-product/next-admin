@@ -439,7 +439,6 @@
 .dark .page-header > form > div > section > button,
 .dark .round-border.active {
   color: #5fd0c5;
-  text-decoration: none;
 }
 
 .dark footer > .btn-accept::after,

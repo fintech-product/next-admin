@@ -11,6 +11,7 @@ const sql = `
     inner join modules m on rm.module_id = m.module_id
   where u.user_id = $1 and r.status = 'A' and m.status = 'A'
   order by sequence`
+
 export const getMenu = async (userId: string) => {
   console.log('Fetching menu...');
   const categories = await db.query<Category>(sql, [userId])

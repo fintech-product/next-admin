@@ -2,6 +2,7 @@
 
 import { getAuthenticator } from "@lib/authentication"
 import { getResource } from "@resources"
+import { Privilege } from "authen-service"
 import { sign } from "jsonwebtoken"
 import { cookies } from "next/headers"
 import { validate } from "validation-core"
@@ -14,6 +15,7 @@ export interface LoginState {
   message?: string
   username?: string
   lang?: string
+  nextUrl: string
 }
 
 export async function loginAction(prevState: LoginState, formData: FormData): Promise<LoginState> {
@@ -27,9 +29,11 @@ export async function loginAction(prevState: LoginState, formData: FormData): Pr
       message: errors[0].message,
       username: obj.username,
       lang: prevState.lang,
+      nextUrl: "/login"
     }
   }
 
+  let nextUrl = "/login"
   const service = getAuthenticator()
   const result = await service.authenticate(obj)
 
@@ -37,12 +41,7 @@ export async function loginAction(prevState: LoginState, formData: FormData): Pr
     const account = result.user
     const cookieStore = await cookies()
 
-    const displayName =
-      account.displayName ||
-      account.username ||
-      account.email ||
-      account.id
-
+    const displayName = account.displayName || account.username || account.email || account.id
     const token = sign(
       {
         id: account.id,
@@ -55,12 +54,15 @@ export async function loginAction(prevState: LoginState, formData: FormData): Pr
       { expiresIn: config.token.expires }
     )
 
-    cookieStore.set("token", token, {
-      httpOnly: true,
-      path: "/",
-    })
+    cookieStore.set("token", token, { httpOnly: true, path: "/" })
+    if (account.privileges) {
+      const firstPath = getFirstPath(account.privileges)
+      if (firstPath) {
+        nextUrl = firstPath
+      }
+    }
 
-    return { success: true, lang: prevState.lang }
+    return { success: true, lang: prevState.lang, nextUrl }
   }
 
   const key = map[String(result.status)]
@@ -71,5 +73,20 @@ export async function loginAction(prevState: LoginState, formData: FormData): Pr
     message,
     username: obj.username,
     lang: prevState.lang,
+    nextUrl
   }
+}
+
+function getFirstPath(items: Privilege[]): string | undefined {
+  for (let i = 0; i < items.length; i++) {
+    const children = items[i].children
+    if (children && children.length > 0) {
+      return getFirstPath(children)
+    } else {
+      if (items[i].path) {
+        return items[i].path
+      }
+    }
+  }
+  return undefined
 }

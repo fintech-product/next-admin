@@ -8,7 +8,7 @@ export const config = {
     },
   },
   db: {
-    url: "postgres://postgres:abcd1234@localhost/my-profile",
+    url: "postgres://postgres:abcd1234@localhost/backoffice",
     max: 10,
   },
   token: {

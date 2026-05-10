@@ -1,5 +1,7 @@
 import { enLocale, getLocale } from "locale-service"
 import { StringMap } from "onecore"
+import { en as adminEN } from "./admin/en"
+import { vi as adminVI } from "./admin/vi"
 import { en as authenticationEN } from "./authentication/en"
 import { vi as authenticationVI } from "./authentication/vi"
 import { en as commonEN } from "./en"
@@ -13,6 +15,17 @@ export const limit = "limit"
 
 export const email = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,4})$"
 
+export const statusNames: Map<string, string> = new Map([
+  ["A", "Active"],
+  ["I", "Inactive"],
+])
+export function getStatusName(status?: string, map?: StringMap): string | undefined {
+  if (!status) {
+    return ""
+  }
+  return statusNames.get(status)
+}
+
 export interface Resources {
   [key: string]: StringMap
 }
@@ -20,10 +33,12 @@ export interface Resources {
 const en: StringMap = {
   ...commonEN,
   ...authenticationEN,
+  ...adminEN,
 }
 const vi: StringMap = {
   ...commonVI,
   ...authenticationVI,
+  ...adminVI,
 }
 
 export const resources: Resources = {
@@ -57,19 +72,25 @@ export function getLangByPath(path?: string | null): string {
   }
   return path === "/vi" || path.startsWith("/vi/") ? "vi" : "en"
 }
-export function getLang(record: Record<string, string | string[] | undefined>): string {
-  const x = record["lang"]
-  if (!x) {
-    return "en"
-  }
-  if (Array.isArray(x)) {
-    if (x.length > 0) {
-      return getLangByString(x[x.length - 1])
-    } else {
+export function getLang(record?: Record<string, string | string[] | undefined> | string): string {
+  if (!record) {
+    return getLangByString()
+  } else if (typeof record === "string") {
+    return getLangByString(record)
+  } else {
+    const x = record["lang"]
+    if (!x) {
       return "en"
     }
+    if (Array.isArray(x)) {
+      if (x.length > 0) {
+        return getLangByString(x[x.length - 1])
+      } else {
+        return "en"
+      }
+    }
+    return getLangByString(x)
   }
-  return getLangByString(x)
 }
 function getLangByString(s?: string | null): string {
   if (!s) {

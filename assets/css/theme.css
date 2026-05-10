@@ -393,7 +393,6 @@ header > .btn-group > button,
 .page-header > form > div > section > button,
 .round-border.active {
   color: #4db6ac;
-  text-decoration: none;
 }
 
 footer > .btn-accept::after,

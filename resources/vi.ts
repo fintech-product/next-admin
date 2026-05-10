@@ -115,6 +115,9 @@ export const vi = {
 
   keyword: "Keyword",
 
+  display_name: "Tên hiển thị",
+  status: "Trạng thái",
+
   country: "Quốc gia",
   company: "Công ty",
   email: "Thư điện tử",
@@ -136,7 +139,7 @@ export const vi = {
 
   sort_time_desc: "Mới nhất",
   sort_time_asc: "Cũ nhất",
-  
+
   sort_desc_time_desc: "Sắp xếp theo Mới nhất",
   sort_desc_time_asc: "Sắp xếp theo Cũ nhất",
 }
