@@ -6,14 +6,14 @@ interface SortProps {
   className?: string
   href: string
   text?: string
-  type?: string // "+" | "-"
+  type?: "+" | "-"
 }
 
 export function SortLink(props: SortProps) {
   return (
     <Link id={props.id} className={props.className} href={props.href} prefetch={false}>
       {props.text}
-      {props.type && (props.type.indexOf("sort-up") >= 0 ? <i className="sort-up"></i> : <i className="sort-down"></i>)}
+      {props.type && (props.type === "+" ? <i className="sort-up"></i> : <i className="sort-down"></i>)}
     </Link>
   )
 }

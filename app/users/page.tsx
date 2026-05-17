@@ -1,4 +1,3 @@
-import { getOffset } from "@components/client-script"
 import { Error } from "@components/error"
 import { Pagination } from "@components/pagination"
 import Search from "@components/search"
@@ -11,6 +10,7 @@ import { UserFilter } from "@service/user/user"
 import Form from "next/form"
 import { headers } from "next/headers"
 import Link from "next/link"
+import { getOffset } from "sql-core"
 import { buildFilter, buildSortSearch, removeLimit, removePage } from "web-one"
 
 const fields = ["userId", "username", "email", "displayName", "status"]
@@ -29,8 +29,8 @@ export  default async function Leadership({ searchParams }: { searchParams: Prom
     const search = removePage(query)
     const limitSearch = removeLimit(query)
     const sort = buildSortSearch(query, fields, filter.sort)
-
     const offset = getOffset(filter.limit, filter.page)
+
     return (
       <div>
         <header>
@@ -70,19 +70,19 @@ export  default async function Leadership({ searchParams }: { searchParams: Prom
                 <tr>
                   <th>{resource.number}</th>
                   <th data-field="userId">
-                    <SortLink id="userIdSort" href={sort.userId.url} type={sort.userId.tag} text={resource.user_id}/>
+                    <SortLink id="userIdSort" href={sort.userId.url} type={sort.userId.type} text={resource.user_id}/>
                   </th>
                   <th data-field="username">
-                    <SortLink id="usernameSort" href={sort.username.url} type={sort.username.tag} text={resource.username}/>
+                    <SortLink id="usernameSort" href={sort.username.url} type={sort.username.type} text={resource.username}/>
                   </th>
                   <th data-field="email">
-                    <SortLink id="emailSort" href={sort.email.url} type={sort.email.tag} text={resource.email}/>
+                    <SortLink id="emailSort" href={sort.email.url} type={sort.email.type} text={resource.email}/>
                   </th>
                   <th data-field="displayName">
-                    <SortLink id="displayNameSort" href={sort.displayName.url} type={sort.displayName.tag} text={resource.display_name}/>
+                    <SortLink id="displayNameSort" href={sort.displayName.url} type={sort.displayName.type} text={resource.display_name}/>
                   </th>
                   <th data-field="status">
-                    <SortLink id="statusSort" href={sort.status.url} type={sort.status.tag} text={resource.status}/>
+                    <SortLink id="statusSort" href={sort.status.url} type={sort.status.type} text={resource.status}/>
                   </th>
                 </tr>
               </thead>

@@ -5,16 +5,6 @@ interface Locale {
   currencySymbol: string
   currencyPattern: number
 }
-export function getOffset(limit: number, page?: number, firstLimit?: number): number {
-  const p = page && page > 0 ? page : 1
-  if (firstLimit && firstLimit > 0) {
-    const offset = limit * (p - 2) + firstLimit
-    return offset < 0 ? 0 : offset
-  } else {
-    const offset = limit * (p - 1)
-    return offset < 0 ? 0 : offset
-  }
-}
 
 export function findParent(e: HTMLElement | null | undefined, className: string, nodeName?: string): HTMLElement | null {
   if (!e) {
@@ -575,10 +565,6 @@ export function validateElement(ele: HTMLInputElement, locale?: Locale | string 
   let value = ele.value
 
   const label = getLabel(ele)
-  let msg0 = checkRequired(ele, label, resource)
-  if (msg0) {
-    return msg0
-  }
 
   if (!value || value === "") {
     return null
