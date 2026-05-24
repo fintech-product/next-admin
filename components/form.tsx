@@ -1,7 +1,55 @@
 "use client"
 
-import { FocusEvent, FocusEventHandler, ReactNode } from "react"
-import { addClass, addErrorMessage, getContainer, isValidPattern, removeClasses, removeError } from "./client-script"
+import { FocusEvent, FocusEventHandler, MouseEvent, ReactNode } from "react"
+import { addClass, addErrorMessage, decode, getContainer, isValidPattern, removeClasses, removeError, validateForm } from "./client-script"
+
+interface SubmitProps {
+  id?: string
+  type: "button" | "submit"
+  name?: string
+  className?: string
+  children?: ReactNode
+  api: string
+}
+
+export function SubmitButton({ type, id, name, className, children, api }: SubmitProps) {
+  const onClick = async (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault()
+    const target = e.target as HTMLButtonElement
+    const form = target.form
+
+    if (form) {
+      const valid = validateForm(form)
+      if (!valid) {
+        e.preventDefault()
+      } else {
+        const body = decode(form)
+        console.log("submit body" + JSON.stringify(body))
+
+        const res = await fetch(api, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        })
+
+        if (res.ok) {
+          alert("Save successfully")
+        } else {
+          if (res.status === 422) {
+          }
+        }
+      }
+    } else {
+      e.preventDefault()
+    }
+  }
+
+  return (
+    <button type={type} id={id} name={name} className={className} onClick={onClick}>
+      {children}
+    </button>
+  )
+}
 
 interface Props {
   type?: string

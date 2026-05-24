@@ -20,7 +20,7 @@ export  default async function UsersForm({ searchParams }: { searchParams: Promi
   const query = await searchParams
   const account = await getCurrentUser()
   if (!account) {
-    redirect("/login")
+    redirect("/login?redirect=users")
   }
   const lang = getLang(account?.id)
   const resource = getResource(lang)

@@ -3,6 +3,7 @@ import { nanoid } from "nanoid";
 import { UseCase } from "onecore";
 import { SqlUserRepository } from "./repository";
 import { User, UserFilter, UserRepository, UserService } from "./user";
+export * from "./user";
 
 export class UserUseCase extends UseCase<User, string, UserFilter> implements UserService {
   constructor(protected repository: UserRepository) {

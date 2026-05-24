@@ -116,7 +116,13 @@ export const vi = {
   keyword: "Keyword",
 
   display_name: "Tên hiển thị",
+  gender: "Giới tính",
+  male: "Nam",
+  female: "Nữ",
+
   status: "Trạng thái",
+  active: "Hoạt động",
+  inactive: "Không hoạt động",
 
   country: "Quốc gia",
   company: "Công ty",

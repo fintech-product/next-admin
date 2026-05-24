@@ -1,3 +1,4 @@
+import { db } from "@lib/db"
 import { UseCase } from "onecore"
 import { DB, Repository } from "sql-core"
 import { Currency, CurrencyFilter, currencyModel, CurrencyRepository, CurrencyService } from "./currency"
@@ -15,7 +16,7 @@ export class CurrencyUseCase extends UseCase<Currency, string, CurrencyFilter> i
 }
 
 let service: CurrencyService | undefined
-export function useCurrencyService(db: DB): CurrencyService {
+export function getCurrencyService(): CurrencyService {
   if (!service) {
     const repository = new SqlCurrencyRepository(db)
     service = new CurrencyUseCase(repository)

@@ -3,12 +3,12 @@ import { Attributes, Filter, SearchResult } from "onecore"
 export interface User {
   userId: string
   username: string
-  email?: string
   displayName?: string
+  gender?: string
+  email?: string
   phone?: string
-  dateOfBirth?: Date
-  roles?: string[]
   status: string
+  roles?: string[]
 
   createdBy: string
   createdAt?: Date

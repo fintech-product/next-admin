@@ -1,3 +1,4 @@
+import { db } from "@lib/db"
 import { UseCase } from "onecore"
 import { DB, Repository } from "sql-core"
 import { Locale, LocaleFilter, localeModel, LocaleRepository, LocaleService } from "./locale"
@@ -15,7 +16,7 @@ export class LocaleUseCase extends UseCase<Locale, string, LocaleFilter> impleme
 }
 
 let service: LocaleService | undefined
-export function getLocaleService(db: DB): LocaleService {
+export function getLocaleService(): LocaleService {
   if (!service) {
     const repository = new SqlLocaleRepository(db)
     service = new LocaleUseCase(repository)

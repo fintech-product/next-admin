@@ -116,7 +116,13 @@ export const en = {
   keyword: "Keyword",
 
   display_name: "Display Name",
+  gender: "Gender",
+  male: "Male",
+  female: "Female",
+
   status: "Status",
+  active: "Active",
+  inactive: "Inactive",
 
   country: "Country",
   company: "Company",

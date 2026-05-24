@@ -1,9 +1,9 @@
 import { formatText } from "@components/client-script"
 import { Error } from "@components/error"
-import Input from "@components/form"
+import Input, { SubmitButton } from "@components/form"
 import { getCurrentUser } from "@lib/account"
 import { logger, toString } from "@lib/logger"
-import { getLang, getResource } from "@resources"
+import { getLang, getResource, Status } from "@resources"
 import { getRoleService } from "@service/role"
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
@@ -66,11 +66,24 @@ export default async function RoleForm({ params }: { params: Promise<{ id: strin
               placeholder={resource.email}
             />
           </label>
+          <label className="col s12 m6">
+            {resource.status}
+            <div className="radio-group">
+              <label>
+                <input type="radio" id="active" name="status" value={Status.Active} defaultChecked={role.status === Status.Active} />
+                {resource.active}
+              </label>
+              <label>
+                <input type="radio" id="inactive" name="status" value={Status.Inactive} defaultChecked={role.status === Status.Inactive} />
+                {resource.inactive}
+              </label>
+            </div>
+          </label>
         </div>
         <footer>
-          <button type="submit" id="btnSubmit" name="btnSubmit">
+          <SubmitButton type="submit" id="btnSubmit" name="btnSubmit" api="/api/roles">
             {resource.submit}
-          </button>
+          </SubmitButton>
         </footer>
       </form>
     )

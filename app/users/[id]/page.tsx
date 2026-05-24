@@ -1,9 +1,9 @@
 import { formatText } from "@components/client-script"
 import { Error } from "@components/error"
-import Input from "@components/form"
+import Input, { SubmitButton } from "@components/form"
 import { getCurrentUser } from "@lib/account"
 import { logger, toString } from "@lib/logger"
-import { email, getLang, getResource } from "@resources"
+import { email, Gender, getLang, getResource, Status } from "@resources"
 import { getUserService } from "@service/user"
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
@@ -24,10 +24,11 @@ export default async function UserForm({ params }: { params: Promise<{ id: strin
       logger.warn(`User not found: ${id}`)
       return <Error title={resource.error_404_title} message={resource.error_404_message} />
     }
+    console.log("user " + JSON.stringify(user))
     return (
-      <form id="contactForm" name="contactForm" className="form" noValidate={true}>
+      <form id="userForm" name="userForm" className="form" noValidate={true}>
         <header>
-          <h2>{resource.contact}</h2>
+          <h2>{resource.user}</h2>
         </header>
         <div className="row">
           <label className="col s12 m6 required">
@@ -37,7 +38,7 @@ export default async function UserForm({ params }: { params: Promise<{ id: strin
               id="userId"
               name="userId"
               defaultValue={user.userId}
-              maxLength={100}
+              maxLength={40}
               required={true}
               requiredError={formatText(resource.error_required, resource.user_id)}
               placeholder={resource.user_id}
@@ -55,6 +56,44 @@ export default async function UserForm({ params }: { params: Promise<{ id: strin
               requiredError={formatText(resource.error_required, resource.username)}
               placeholder={resource.username}
             />
+          </label>
+          <label className="col s12 m6 required">
+            {resource.display_name}
+            <Input
+              type="text"
+              id="displayName"
+              name="displayName"
+              defaultValue={user.displayName}
+              maxLength={120}
+              required={true}
+              requiredError={formatText(resource.error_required, resource.display_name)}
+              placeholder={resource.display_name}
+            />
+          </label>
+          <label className="col s12 m6">
+            {resource.gender}
+            <div className="radio-group">
+              <label>
+                <input
+                  type="radio"
+                  id="gender"
+                  name="gender"
+                  value={Gender.Male}
+                  defaultChecked={user.gender === Gender.Male}
+                />
+                {resource.male}
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  id="gender"
+                  name="gender"
+                  value={Gender.Female}
+                  defaultChecked={user.gender === Gender.Female}
+                />
+                {resource.female}
+              </label>
+            </div>
           </label>
           <label className="col s12 m6 required">
             {resource.email}
@@ -86,10 +125,23 @@ export default async function UserForm({ params }: { params: Promise<{ id: strin
             />
           </label>
         </div>
+        <label className="col s12 m6">
+          {resource.status}
+          <div className="radio-group">
+            <label>
+              <input type="radio" id="active" name="status" value={Status.Active} defaultChecked={user.status === Status.Active} />
+              {resource.active}
+            </label>
+            <label>
+              <input type="radio" id="inactive" name="status" value={Status.Inactive} defaultChecked={user.status === Status.Inactive} />
+              {resource.inactive}
+            </label>
+          </div>
+        </label>
         <footer>
-          <button type="submit" id="btnSubmit" name="btnSubmit">
+          <SubmitButton type="submit" id="btnSubmit" name="btnSubmit" api="/api/users">
             {resource.submit}
-          </button>
+          </SubmitButton>
         </footer>
       </form>
     )
