@@ -5,8 +5,8 @@ import { SortLink } from "@components/sort"
 import { getCurrentUser } from "@lib/account"
 import { logger, toString } from "@lib/logger"
 import { defaultLimit, getLang, getResource, getStatusName, limits } from "@resources"
-import { getUserService } from "@service/user"
-import { UserFilter } from "@service/user/user"
+import { getRoleService } from "@service/role"
+import { RoleFilter } from "@service/role/role"
 import Form from "next/form"
 import { headers } from "next/headers"
 import Link from "next/link"
@@ -14,9 +14,9 @@ import { redirect } from "next/navigation"
 import { getOffset } from "sql-core"
 import { buildFilter, buildSortSearch, removeLimit, removePage } from "web-one"
 
-const fields = ["userId", "username", "email", "displayName", "status"]
+const fields = ["roleId", "roleName", "remark", "status"]
 
-export  default async function UsersForm({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+export  default async function RolesForm({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const query = await searchParams
   const account = await getCurrentUser()
   if (!account) {
@@ -25,8 +25,8 @@ export  default async function UsersForm({ searchParams }: { searchParams: Promi
   const lang = getLang(account?.id)
   const resource = getResource(lang)
 
-  const filter = buildFilter<UserFilter>(query, defaultLimit)
-  const service = getUserService()
+  const filter = buildFilter<RoleFilter>(query, defaultLimit)
+  const service = getRoleService()
   try {
     const { list, total } = await service.search(filter, filter.limit, filter.page, fields)
 
@@ -38,7 +38,7 @@ export  default async function UsersForm({ searchParams }: { searchParams: Promi
     return (
       <div>
         <header>
-          <h2>{resource.users}</h2>
+          <h2>{resource.roles}</h2>
         </header>
         <div className="main-body">
           <Form id="jobsForm" name="jobsForm" className="form" noValidate={true} action="/jobs">
@@ -56,35 +56,20 @@ export  default async function UsersForm({ searchParams }: { searchParams: Promi
               />
               <Pagination className="col s12 l4 xl3" total={total} size={filter.limit} page={filter.page} search={search} />
             </section>
-            <section className="row search-group advance-search inline" hidden>
-              <label className="col s12 m6">
-                {resource.email}
-                <input
-                  type="text"
-                  id="email"
-                  name="email"
-                  maxLength={80}
-                  defaultValue={filter.email}
-                />
-              </label>
-            </section>
           </Form>
           <div className="table-responsive">
             <table className="table">
               <thead>
                 <tr>
                   <th>{resource.number}</th>
-                  <th data-field="userId">
-                    <SortLink id="userIdSort" href={sort.userId.url} type={sort.userId.type} text={resource.user_id}/>
+                  <th data-field="roleId">
+                    <SortLink id="roleIdSort" href={sort.roleId.url} type={sort.roleId.type} text={resource.role_id}/>
                   </th>
-                  <th data-field="username">
-                    <SortLink id="usernameSort" href={sort.username.url} type={sort.username.type} text={resource.username}/>
+                  <th data-field="roleName">
+                    <SortLink id="roleNameSort" href={sort.roleName.url} type={sort.roleName.type} text={resource.role_name}/>
                   </th>
-                  <th data-field="email">
-                    <SortLink id="emailSort" href={sort.email.url} type={sort.email.type} text={resource.email}/>
-                  </th>
-                  <th data-field="displayName">
-                    <SortLink id="displayNameSort" href={sort.displayName.url} type={sort.displayName.type} text={resource.display_name}/>
+                  <th data-field="remark">
+                    <SortLink id="remarkSort" href={sort.remark.url} type={sort.remark.type} text={resource.remark}/>
                   </th>
                   <th data-field="status">
                     <SortLink id="statusSort" href={sort.status.url} type={sort.status.type} text={resource.status}/>
@@ -92,17 +77,16 @@ export  default async function UsersForm({ searchParams }: { searchParams: Promi
                 </tr>
               </thead>
               <tbody>
-                {list.map((user, i) => {
+                {list.map((role, i) => {
                   return (
                     <tr key={i}>
                       <td className="text-right">{offset + i + 1}</td>
-                      <td>{user.userId}</td>
+                      <td>{role.roleId}</td>
                       <td>
-                        <Link href={`/users/${user.userId}`} prefetch={false}>{user.username}</Link>
+                        <Link href={`/roles/${role.roleId}`} prefetch={false}>{role.roleName}</Link>
                       </td>
-                      <td>{user.email}</td>
-                      <td>{user.displayName}</td>
-                      <td>{getStatusName(user.status, resource)}</td>
+                      <td>{role.remark}</td>
+                      <td>{getStatusName(role.status, resource)}</td>
                     </tr>
                   )
                 })}

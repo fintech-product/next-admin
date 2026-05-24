@@ -3,13 +3,12 @@ import { Error } from "@components/error"
 import Input from "@components/form"
 import { getCurrentUser } from "@lib/account"
 import { logger, toString } from "@lib/logger"
-import { email, getLang, getResource } from "@resources"
-import { getUserService } from "@service/user"
+import { getLang, getResource } from "@resources"
+import { getRoleService } from "@service/role"
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
-import { formatPhone } from "web-one"
 
-export default async function UserForm({ params }: { params: Promise<{ id: string }> }) {
+export default async function RoleForm({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const account = await getCurrentUser()
   if (!account) {
@@ -17,11 +16,11 @@ export default async function UserForm({ params }: { params: Promise<{ id: strin
   }
   const lang = getLang(account?.id)
   const resource = getResource(lang)
-  const service = getUserService()
+  const service = getRoleService()
   try {
-    const user = await service.load(id)
-    if (!user) {
-      logger.warn(`User not found: ${id}`)
+    const role = await service.load(id)
+    if (!role) {
+      logger.warn(`Role not found: ${id}`)
       return <Error title={resource.error_404_title} message={resource.error_404_message} />
     }
     return (
@@ -31,58 +30,40 @@ export default async function UserForm({ params }: { params: Promise<{ id: strin
         </header>
         <div className="row">
           <label className="col s12 m6 required">
-            {resource.user_id}
+            {resource.role_id}
             <Input
               type="text"
-              id="userId"
-              name="userId"
-              defaultValue={user.userId}
+              id="roleId"
+              name="roleId"
+              defaultValue={role.roleId}
               maxLength={100}
               required={true}
-              requiredError={formatText(resource.error_required, resource.user_id)}
-              placeholder={resource.user_id}
+              requiredError={formatText(resource.error_required, resource.role_id)}
+              placeholder={resource.role_id}
             />
           </label>
           <label className="col s12 m6 required">
-            {resource.username}
+            {resource.role_name}
             <Input
               type="text"
-              id="username"
-              name="username"
-              defaultValue={user.username}
+              id="roleName"
+              name="roleName"
+              defaultValue={role.roleName}
               maxLength={100}
               required={true}
-              requiredError={formatText(resource.error_required, resource.username)}
-              placeholder={resource.username}
+              requiredError={formatText(resource.error_required, resource.role_name)}
+              placeholder={resource.role_name}
             />
           </label>
-          <label className="col s12 m6 required">
-            {resource.email}
+          <label className="col s12 m6">
+            {resource.remark}
             <Input
               type="text"
-              id="email"
-              name="email"
-              data-type="email"
-              defaultValue={user.email}
+              id="remark"
+              name="remark"
+              defaultValue={role.remark}
               maxLength={120}
-              required={true}
-              requiredError={formatText(resource.error_required, resource.email)}
-              pattern={email}
-              error={formatText(resource.error_email, resource.email)}
               placeholder={resource.email}
-            />
-          </label>
-          <label className="col s12 m6 required">
-            {resource.phone}
-            <Input
-              type="tel"
-              id="phone"
-              name="phone"
-              defaultValue={formatPhone(user.phone)}
-              maxLength={17}
-              required={true}
-              requiredError={formatText(resource.error_required, resource.phone)}
-              placeholder={resource.phone}
             />
           </label>
         </div>

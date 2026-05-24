@@ -20,8 +20,9 @@ export const vi = {
   role_filter_modules: "Lọc theo module",
   role_id: "Mã vai trò",
   role_name: "Tên vai trò",
+  remark: "Ghi chú",
   role_system_role: "Vai trò hệ thống",
-  module: "Module",
+  module: "Chức năng",
 
   all_privileges: "Tất cả quyền",
 

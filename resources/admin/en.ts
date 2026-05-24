@@ -20,6 +20,7 @@ export const en = {
   role_filter_modules: "Filter modules",
   role_id: "Role Id",
   role_name: "Role Name",
+  remark: "Remark",
   role_system_role: "System Role",
   module: "Module",
 
