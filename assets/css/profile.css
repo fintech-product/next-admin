@@ -11,7 +11,7 @@
     overflow-x: unset;
   }
 }
-.profile .cover {
+.profile > .cover {
   height: 240px;
   width: 100%;
   margin-left: 0;
@@ -19,7 +19,7 @@
   background-position: center;
   position: relative;
 }
-.profile .cover > .btn-camera {
+.profile > .cover > .btn-camera {
   position: absolute;
   top: 10px;
   right: 6px;
@@ -50,12 +50,13 @@
 }
 .profile-body {
   margin-top: 16px;
+  min-height: 240px;
 }
 @media only screen and (min-width: 1201px) {
   .profile {
     padding: 0 5% 0 5%;
   }
-  .profile .cover {
+  .profile > .cover {
     width: calc(100% - 32px);
     margin-left: 16px;
   }
@@ -118,13 +119,16 @@
   gap: 16px;
   color: inherit;
 }
+.profile-followers > span,
 .profile-followers > a {
   display: flex;
   color: inherit;
 }
+.profile-followers > span > i,
 .profile-followers > a > i {
   margin-right: 8px;
 }
+.profile-followers > span > i.material-icons,
 .profile-followers > a > i.material-icons {
   font-size: 19px;
 }
@@ -192,12 +196,14 @@
 .tabs {
   margin: auto;
   display: flex;
-  gap: 32px;
+  gap: 16px;
   padding: 0 16px;
+  color: inherit;
+  background-color: inherit;
   border-bottom: 1px solid #e5e5e5;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.18);
   position: sticky;
-  top: 89px;
+  top: 76px;
   z-index: 90;
 }
 .tab {
@@ -206,7 +212,10 @@
   cursor: pointer;
   position: relative;
   font-weight: 500;
+  list-style-type: none;
+  color: inherit;
 }
+a.tab.active,
 .tab.active {
   color: #111;
 }
@@ -235,10 +244,7 @@
   padding: 16px;
   padding-top: 0;
 }
-.profile .list.row.card-grid {
-  margin-top: 0;
-}
-.profile ul.list.row.card-grid {
+.profile-card-grid {
   margin-top: -8px;
 }
 
@@ -260,11 +266,6 @@
   flex-direction: unset;
 }
 
-.profile .main-body {
-  padding-top: unset;
-  max-height: unset;
-  height: unset;
-}
 .profile .profile-body > header {
   margin-bottom: 4px;
 }
