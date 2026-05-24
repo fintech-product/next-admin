@@ -2,7 +2,7 @@
 import { getCurrentUser } from "@lib/account"
 import { logger, toString } from "@lib/logger"
 import { getResource } from "@resources"
-import { getRoleService, Role, roleModel } from "@service/role"
+import { Country, countryModel, getCountryService } from "@service/country"
 import { NextRequest, NextResponse } from "next/server"
 import { validate } from "validation-core"
 
@@ -18,22 +18,22 @@ export async function POST(req: NextRequest) {
   const lang = account.language
   const resource = getResource(lang)
 
-  const role: Role = await req.json()
+  const country: Country = await req.json()
 
-  const errors = validate(role, roleModel, resource)
+  const errors = validate(country, countryModel, resource)
   console.log("Errors " + JSON.stringify(errors))
 
   if (errors.length > 0) {
     return NextResponse.json({ errors: errors }, { status: 422 })
   }
 
-  const service = getRoleService()
+  const service = getCountryService()
   try {
-    const res = await service.update(role)
+    const res = await service.update(country)
     const status = res > 0 ? 200 : res === 0 ? 410 : 409
     return NextResponse.json(res, { status })
   } catch (err) {
-    logger.error(`Error at PUT /roles: ${toString(err)}`)
+    logger.error(`Error at POST /countries: ${toString(err)}`)
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }

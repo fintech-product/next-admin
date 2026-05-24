@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     const status = res > 0 ? 200 : res === 0 ? 410 : 409
     return NextResponse.json(res, { status })
   } catch (err) {
-    logger.error(`Error at PUT /users: ${toString(err)}`)
+    logger.error(`Error at POST /users: ${toString(err)}`)
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }
