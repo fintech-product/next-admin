@@ -1,3 +1,4 @@
+import BackButton from "@components/client"
 import { formatText } from "@components/client-script"
 import { Error } from "@components/error"
 import { Input, SubmitButton } from "@components/form"
@@ -29,6 +30,7 @@ export default async function CurrencyForm({ params }: { params: Promise<{ id: s
     return (
       <form id="contactForm" name="contactForm" className="form" noValidate={true}>
         <header>
+          <BackButton id="backBtn" name="backBtn" className="btn-back" />
           <h2>{resource.contact}</h2>
         </header>
         <div className="row">

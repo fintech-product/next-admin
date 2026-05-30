@@ -56,6 +56,21 @@ export  default async function CurrenciesForm({ searchParams }: { searchParams: 
               />
               <Pagination className="col s12 l4 xl3" total={total} size={filter.limit} page={filter.page} search={search} />
             </section>
+            <section className="row search-group advance-search" hidden>
+              <label className="col s12 m6 l4 xl6">
+                {resource.currency_decimal_digits}
+                <input
+                  type="tel"
+                  id="decimalDigits"
+                  name="decimalDigits"
+                  data-type="integer"
+                  className="text-right"
+                  defaultValue={filter.decimalDigits}
+                  maxLength={1}
+                  placeholder={resource.currency_decimal_digits}
+                />
+              </label>
+            </section>
           </Form>
           <div className="table-responsive">
             <table className="table">

@@ -147,25 +147,4 @@ export const vi = {
 
   sort_desc_time_desc: "Sắp xếp theo Mới nhất",
   sort_desc_time_asc: "Sắp xếp theo Cũ nhất",
-
-  currencies: "Currencies",
-  currency: "Currency",
-  currency_code: "Currency Code",
-  currency_symbol: "Currency Symbol",
-  currency_decimal_digits: "Currency Decimal Digits",
-
-  locales: "Locales",
-  locale: "Locale",
-  locale_code: "Locale Code",
-  locale_name: "Locale Name",
-  locale_native_name: "Native Locale Name",
-  countries: "Countries",
-  country_code: "Country Code",
-  country_name: "Country Name",
-  country_native_name: "Native Country Name",
-  first_day_of_week: "First Day Of Week",
-  decimal_separator: "Decimal Separator",
-  group_separator: "Group Separator",
-  currency_pattern: "Currency Pattern",
-  currency_sample: "Currency Sample",
 }

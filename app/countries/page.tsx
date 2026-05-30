@@ -12,9 +12,9 @@ import Link from "next/link"
 import { redirect } from "next/navigation"
 import { buildFilter, buildSortSearch, getOffset, removeLimit, removePage } from "web-one"
 
-const fields = ["countryCode", "countryName", "nativeCountryName", "dateFormat", "groupSeparator", "groupSeparator", "currencyCode", "currencySymbol", "currencyDecimalDigits", "currencyPattern", "currencySample", "status"]
+const fields = ["countryCode", "countryName", "nativeCountryName", "decimalSeparator", "groupSeparator", "currencyCode", "currencySymbol", "currencyDecimalDigits", "currencyPattern", "currencySample", "status"]
 
-export  default async function CountriesForm({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+export default async function CountriesForm({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const headerList = await headers()
   const pathname = headerList.get("x-current-path") as string
   const account = await getCurrentUser()
@@ -33,6 +33,7 @@ export  default async function CountriesForm({ searchParams }: { searchParams: P
     const search = removePage(query)
     const limitSearch = removeLimit(query)
     const sort = buildSortSearch(query, fields, filter.sort)
+    console.log("sort " + JSON.stringify(sort))
     const offset = getOffset(filter.limit, filter.page)
 
     return (
@@ -44,7 +45,7 @@ export  default async function CountriesForm({ searchParams }: { searchParams: P
           <Form id="countriesForm" name="countriesForm" className="form" noValidate={true} action="/countries">
             <section className="row search-group">
               <Search
-                className="col s12 m6 l4 xl6 search-input" 
+                className="col s12 m6 l4 xl6 search-input"
                 limit={filter.limit}
                 limits={limits}
                 limitSearch={limitSearch}
@@ -56,6 +57,34 @@ export  default async function CountriesForm({ searchParams }: { searchParams: P
               />
               <Pagination className="col s12 l4 xl3" total={total} size={filter.limit} page={filter.page} search={search} />
             </section>
+            <section className="row search-group advance-search" hidden>
+              <label className="col s6 l3">
+                {resource.currency_decimal_digits}
+                <input
+                  type="tel"
+                  id="currencyDecimalDigits"
+                  name="currencyDecimalDigits"
+                  data-type="integer"
+                  className="text-right"
+                  defaultValue={filter.currencyDecimalDigits}
+                  maxLength={1}
+                  placeholder={resource.currency_decimal_digits}
+                />
+              </label>
+              <label className="col s6 l3">
+                {resource.currency_pattern}
+                <input
+                  type="tel"
+                  id="currencyPattern"
+                  name="currencyPattern"
+                  data-type="integer"
+                  className="text-right"
+                  defaultValue={filter.currencyPattern}
+                  maxLength={1}
+                  placeholder={resource.currency_pattern}
+                />
+              </label>
+            </section>
           </Form>
           <div className="table-responsive">
             <table className="table">
@@ -63,37 +92,37 @@ export  default async function CountriesForm({ searchParams }: { searchParams: P
                 <tr>
                   <th>{resource.number}</th>
                   <th data-field="countryCode">
-                    <SortLink id="countryCodeSort" href={sort.countryCode.url} type={sort.countryCode.type} text={resource.country_code}/>
+                    <SortLink id="countryCodeSort" href={sort.countryCode.url} type={sort.countryCode.type} text={resource.country_code} />
                   </th>
                   <th data-field="countryName">
-                    <SortLink id="countryNameSort" href={sort.countryName.url} type={sort.countryName.type} text={resource.country_name}/>
+                    <SortLink id="countryNameSort" href={sort.countryName.url} type={sort.countryName.type} text={resource.country_name} />
                   </th>
                   <th data-field="nativeCountryName">
-                    <SortLink id="nativeCountryNameSort" href={sort.nativeCountryName.url} type={sort.nativeCountryName.type} text={resource.country_native_name}/>
+                    <SortLink id="nativeCountryNameSort" href={sort.nativeCountryName.url} type={sort.nativeCountryName.type} text={resource.country_native_name} />
                   </th>
                   <th data-field="decimalSeparator">
-                    <SortLink id="decimalSeparatorSort" href={sort.decimalSeparator.url} type={sort.decimalSeparator.type} text={resource.decimal_separator}/>
+                    <SortLink id="decimalSeparatorSort" href={sort.decimalSeparator.url} type={sort.decimalSeparator.type} text={resource.decimal_separator} />
                   </th>
                   <th data-field="groupSeparator">
-                    <SortLink id="groupSeparatorSort" href={sort.groupSeparator.url} type={sort.groupSeparator.type} text={resource.group_separator}/>
+                    <SortLink id="groupSeparatorSort" href={sort.groupSeparator.url} type={sort.groupSeparator.type} text={resource.group_separator} />
                   </th>
                   <th data-field="currencyCode">
-                    <SortLink id="currencyCodeSort" href={sort.currencyCode.url} type={sort.currencyCode.type} text={resource.currency_code}/>
+                    <SortLink id="currencyCodeSort" href={sort.currencyCode.url} type={sort.currencyCode.type} text={resource.currency_code} />
                   </th>
                   <th data-field="currencySymbol">
-                    <SortLink id="currencySymbolSort" href={sort.currencySymbol.url} type={sort.currencySymbol.type} text={resource.currency_symbol}/>
+                    <SortLink id="currencySymbolSort" href={sort.currencySymbol.url} type={sort.currencySymbol.type} text={resource.currency_symbol} />
                   </th>
                   <th data-field="currencyDecimalDigits">
-                    <SortLink id="currencyDecimalDigitsSort" href={sort.currencyDecimalDigits.url} type={sort.currencyDecimalDigits.type} text={resource.currency_decimal_digits}/>
+                    <SortLink id="currencyDecimalDigitsSort" href={sort.currencyDecimalDigits.url} type={sort.currencyDecimalDigits.type} text={resource.currency_decimal_digits} />
                   </th>
                   <th data-field="currencyPattern">
-                    <SortLink id="currencyPatternSort" href={sort.currencyPattern.url} type={sort.currencyPattern.type} text={resource.currency_pattern}/>
+                    <SortLink id="currencyPatternSort" href={sort.currencyPattern.url} type={sort.currencyPattern.type} text={resource.currency_pattern} />
                   </th>
                   <th data-field="currencySample">
-                    <SortLink id="currencySampleSort" href={sort.currencySample.url} type={sort.currencySample.type} text={resource.currency_sample}/>
+                    <SortLink id="currencySampleSort" href={sort.currencySample.url} type={sort.currencySample.type} text={resource.currency_sample} />
                   </th>
                   <th data-field="status">
-                    <SortLink id="statusSort" href={sort.status.url} type={sort.status.type} text={resource.status}/>
+                    <SortLink id="statusSort" href={sort.status.url} type={sort.status.type} text={resource.status} />
                   </th>
                 </tr>
               </thead>

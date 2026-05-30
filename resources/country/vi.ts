@@ -1,4 +1,5 @@
 export const vi = {
+  date_format: "Date Format",
   currencies: "Currencies",
   currency: "Currency",
   currency_code: "Currency Code",
