@@ -28,8 +28,8 @@ export class UserUseCase extends UseCase<User, string, UserFilter> implements Us
 let service: UserService | undefined
 export function getUserService(): UserService {
   if (!service) {
-    const repo = new SqlUserRepository(db)
-    service = new UserUseCase(repo)
+    const repository = new SqlUserRepository(db)
+    service = new UserUseCase(repository)
   }
   return service
 }

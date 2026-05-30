@@ -9,15 +9,17 @@ import { loginAction, LoginState } from "./actions"
 export interface Props {
   resource: StringMap
   lang?: string
+  redirect?: string
 }
 
-export default function LoginForm({ lang, resource }: Props) {
+export default function LoginForm({ lang, resource, redirect }: Props) {
   const router = useRouter()
 
   const initialState: LoginState = {
     success: false,
     lang,
-    nextUrl: "/login"
+    nextUrl: "/login",
+    redirect
   }
   const [state, formAction, pending] = useActionState(loginAction, initialState)
 

@@ -22,14 +22,11 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   user.userId = id
 
   const errors = validate(user, userModel, resource)
-  console.log("Errors " + JSON.stringify(errors))
-
   if (errors.length > 0) {
-    return NextResponse.json({ errors: errors }, { status: 422 })
+    return NextResponse.json(errors, { status: 422 })
   }
 
   const service = getUserService()
-
   try {
     const res = await service.update(user)
     const status = res > 0 ? 200 : res === 0 ? 410 : 409

@@ -2,7 +2,7 @@
 
 import { getAuthenticator } from "@lib/authentication"
 import { getResource } from "@resources"
-import { Privilege } from "authen-service"
+import { getFirstPath } from "authen-service"
 import { sign } from "jsonwebtoken"
 import { cookies } from "next/headers"
 import { validate } from "validation-core"
@@ -16,6 +16,7 @@ export interface LoginState {
   username?: string
   lang?: string
   nextUrl: string
+  redirect?: string
 }
 
 export async function loginAction(prevState: LoginState, formData: FormData): Promise<LoginState> {
@@ -29,6 +30,7 @@ export async function loginAction(prevState: LoginState, formData: FormData): Pr
       message: errors[0].message,
       username: obj.username,
       lang: prevState.lang,
+      redirect: prevState.redirect,
       nextUrl: "/login"
     }
   }
@@ -55,13 +57,14 @@ export async function loginAction(prevState: LoginState, formData: FormData): Pr
     )
 
     cookieStore.set("token", token, { httpOnly: true, path: "/" })
-    if (account.privileges) {
+    if (prevState.redirect) {
+      nextUrl = prevState.redirect
+    } else if (account.privileges) {
       const firstPath = getFirstPath(account.privileges)
       if (firstPath) {
         nextUrl = firstPath
       }
     }
-
     return { success: true, lang: prevState.lang, nextUrl }
   }
 
@@ -73,20 +76,7 @@ export async function loginAction(prevState: LoginState, formData: FormData): Pr
     message,
     username: obj.username,
     lang: prevState.lang,
+    redirect: prevState.redirect,
     nextUrl
   }
-}
-
-function getFirstPath(items: Privilege[]): string | undefined {
-  for (let i = 0; i < items.length; i++) {
-    const children = items[i].children
-    if (children && children.length > 0) {
-      return getFirstPath(children)
-    } else {
-      if (items[i].path) {
-        return items[i].path
-      }
-    }
-  }
-  return undefined
 }

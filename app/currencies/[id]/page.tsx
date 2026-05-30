@@ -4,11 +4,11 @@ import { Input, SubmitButton } from "@components/form"
 import { getCurrentUser } from "@lib/account"
 import { logger, toString } from "@lib/logger"
 import { getLang, getResource, Status } from "@resources"
-import { getRoleService } from "@service/role"
+import { getCurrencyService } from "@service/currency"
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 
-export default async function RoleForm({ params }: { params: Promise<{ id: string }> }) {
+export default async function CurrencyForm({ params }: { params: Promise<{ id: string }> }) {
   const headerList = await headers()
   const pathname = headerList.get("x-current-path") as string
   const account = await getCurrentUser()
@@ -19,11 +19,11 @@ export default async function RoleForm({ params }: { params: Promise<{ id: strin
   const resource = getResource(lang)
 
   const { id } = await params
-  const service = getRoleService()
+  const service = getCurrencyService()
   try {
-    const role = await service.load(id)
-    if (!role) {
-      logger.warn(`Role not found: ${id}`)
+    const currency = await service.load(id)
+    if (!currency) {
+      logger.warn(`Currency not found: ${id}`)
       return <Error title={resource.error_404_title} message={resource.error_404_message} />
     }
     return (
@@ -33,58 +33,60 @@ export default async function RoleForm({ params }: { params: Promise<{ id: strin
         </header>
         <div className="row">
           <label className="col s12 m6 required">
-            {resource.role_id}
+            {resource.currency_code}
             <Input
               type="text"
-              id="roleId"
-              name="roleId"
-              defaultValue={role.roleId}
+              id="code"
+              name="code"
+              defaultValue={currency.code}
               maxLength={100}
               required={true}
-              requiredError={formatText(resource.error_required, resource.role_id)}
-              placeholder={resource.role_id}
+              requiredError={formatText(resource.error_required, resource.currency_id)}
+              placeholder={resource.currency_id}
             />
           </label>
           <label className="col s12 m6 required">
-            {resource.role_name}
+            {resource.currency_symbol}
             <Input
               type="text"
-              id="roleName"
-              name="roleName"
-              defaultValue={role.roleName}
-              maxLength={100}
+              id="symbol"
+              name="symbol"
+              defaultValue={currency.symbol}
+              maxLength={5}
               required={true}
-              requiredError={formatText(resource.error_required, resource.role_name)}
-              placeholder={resource.role_name}
+              requiredError={formatText(resource.error_required, resource.currency_name)}
+              placeholder={resource.currency_name}
             />
           </label>
           <label className="col s12 m6">
-            {resource.remark}
+            {resource.currency_decimal_digits}
             <Input
-              type="text"
-              id="remark"
-              name="remark"
-              defaultValue={role.remark}
-              maxLength={120}
-              placeholder={resource.email}
+              type="tel"
+              id="decimalDigits"
+              name="decimalDigits"
+              defaultValue={currency.decimalDigits}
+              maxLength={1}
+              min={0}
+              max={3}
+              placeholder={resource.currency_decimal_digits}
             />
           </label>
           <label className="col s12 m6">
             {resource.status}
             <div className="radio-group">
               <label>
-                <input type="radio" id="active" name="status" value={Status.Active} defaultChecked={role.status === Status.Active} />
+                <input type="radio" id="active" name="status" value={Status.Active} defaultChecked={currency.status === Status.Active} />
                 {resource.active}
               </label>
               <label>
-                <input type="radio" id="inactive" name="status" value={Status.Inactive} defaultChecked={role.status === Status.Inactive} />
+                <input type="radio" id="inactive" name="status" value={Status.Inactive} defaultChecked={currency.status === Status.Inactive} />
                 {resource.inactive}
               </label>
             </div>
           </label>
         </div>
         <footer>
-          <SubmitButton type="submit" id="btnSubmit" name="btnSubmit" api="/api/roles">
+          <SubmitButton type="submit" id="btnSubmit" name="btnSubmit" api="/api/currencies">
             {resource.submit}
           </SubmitButton>
         </footer>

@@ -33,15 +33,15 @@ export function buildQuery(filter: UserFilter): Statement {
   }
 
   if (filter.email) {
-    where.push(`email ilike $${param(i++)}`);
+    where.push(`email ilike ${param(i++)}`);
     params.push(`${filter.email}%`);
   }
   if (filter.username) {
-    where.push(`username ilike $${param(i++)}`);
+    where.push(`username ilike ${param(i++)}`);
     params.push(`${filter.username}%`);
   }
   if (filter.displayName) {
-    where.push(`display_name ilike $${param(i++)}`);
+    where.push(`display_name ilike ${param(i++)}`);
     params.push(`%${filter.displayName}%`);
   }
 

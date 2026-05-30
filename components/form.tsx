@@ -1,7 +1,7 @@
 "use client"
 
 import { FocusEvent, FocusEventHandler, MouseEvent, ReactNode } from "react"
-import { addClass, addErrorMessage, decode, getContainer, isValidPattern, removeClasses, removeError, validateForm } from "./client-script"
+import { addClass, addErrorMessage, decode, formatText, getContainer, getLabel, getRequiredError, isValidPattern, normalizePhone, removeClasses, removeError, showFormError, validateForm } from "./client-script"
 
 interface SubmitProps {
   id?: string
@@ -36,6 +36,13 @@ export function SubmitButton({ type, id, name, className, children, api }: Submi
           alert("Save successfully")
         } else {
           if (res.status === 422) {
+            const data = await res.json()
+            console.log(JSON.stringify(data))
+            if (Array.isArray(data)) {
+              showFormError(form, data)
+            } else {
+              alert("Data validation failed at server")
+            }
           }
         }
       }
@@ -55,6 +62,7 @@ interface Props {
   type?: string
   id?: string
   name?: string
+  step?: string | number
   dataType?: string
   className?: string
   pattern?: string
@@ -72,10 +80,11 @@ interface Props {
   onFocus?: FocusEventHandler<HTMLInputElement>
   onBlur?: FocusEventHandler<HTMLInputElement>
 }
-export default function Input({
+export function Input({
   type,
   id,
   name,
+  step,
   dataType,
   className,
   defaultValue,
@@ -100,6 +109,7 @@ export default function Input({
       type={type}
       id={id}
       name={name}
+      step={step}
       className={className}
       pattern={pattern}
       data-type={dataType}
@@ -126,10 +136,8 @@ export function checkOnBlur(e: FocusEvent<HTMLInputElement>, required?: boolean,
   const input = e.target
   removeError(input)
   if (required) {
-    const err = requiredError ? requiredError : "Required field"
-    checkRequired(e, err, patern, paternError)
+    checkRequired(e, requiredError, patern, paternError)
   } else {
-    debugger
     if (patern) {
       console.log("patern " + patern)
       if (!isValidPattern(input.value, patern)) {
@@ -141,16 +149,23 @@ export function checkOnBlur(e: FocusEvent<HTMLInputElement>, required?: boolean,
     removeError(input)
   }
 }
-export function checkRequired(e: FocusEvent<HTMLInputElement>, msg: string, patern?: string, paternError?: string) {
+export function checkRequired(e: FocusEvent<HTMLInputElement>, msg?: string, patern?: string, paternError?: string) {
   materialOnBlur(e)
-  const input = e.target
+  const input = e.target as HTMLInputElement
   removeError(input)
   if (input.value === "") {
-    addErrorMessage(input, msg)
+    if (msg) {
+      addErrorMessage(input, msg)
+    } else {
+      const requiredFormat = getRequiredError(input)
+      const label = getLabel(input)
+      msg = formatText(requiredFormat, label)
+      addErrorMessage(input, msg)
+    }
   } else {
     if (patern) {
       if (!isValidPattern(input.value, patern)) {
-        const error = paternError ? paternError : "Pattern Error"
+        const error = paternError ? paternError : "Format Error"
         addErrorMessage(input, error)
         return
       }
@@ -159,6 +174,13 @@ export function checkRequired(e: FocusEvent<HTMLInputElement>, msg: string, pate
   }
 }
 
+export function phoneOnFocus(e: FocusEvent<HTMLInputElement>) {
+  e.target.value = normalizePhone(e.target.value)
+  removeError(e.target)
+}
+export function phoneOnBlur(e: FocusEvent<HTMLInputElement>) {
+
+}
 export function inputOnFocus(e: FocusEvent<HTMLInputElement>) {
   removeError(e.target)
 }

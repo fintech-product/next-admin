@@ -29,10 +29,14 @@ export const vi = {
   role_assigned_users: "Người dùng được gán",
   role_roles_assign_to_groups: "Vai trò được gán cho nhóm",
 
+  number: "Số",
   // Audit log
   audit_logs: "Nhật ký kiểm tra",
   audit_log_time: "Thời gian",
   audit_log_time_from: "Từ ngày giờ",
   audit_log_time_to: "Đến ngày giờ",
   audit_log_user: "Thực hiện bởi",
+  action: "Hành động",
+  resource: "Resource",
+  ip: "IP",
 }

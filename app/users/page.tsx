@@ -11,20 +11,22 @@ import Form from "next/form"
 import { headers } from "next/headers"
 import Link from "next/link"
 import { redirect } from "next/navigation"
-import { getOffset } from "sql-core"
-import { buildFilter, buildSortSearch, removeLimit, removePage } from "web-one"
+import { buildFilter, buildSortSearch, getOffset, removeLimit, removePage } from "web-one"
 
 const fields = ["userId", "username", "email", "displayName", "status"]
 
 export  default async function UsersForm({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
-  const query = await searchParams
+  const headerList = await headers()
+  const pathname = headerList.get("x-current-path") as string
+  console.log("path " + pathname)
   const account = await getCurrentUser()
   if (!account) {
-    redirect("/login?redirect=users")
+    redirect(`/login?redirect=${encodeURIComponent(pathname)}`)
   }
   const lang = getLang(account?.id)
   const resource = getResource(lang)
 
+  const query = await searchParams
   const filter = buildFilter<UserFilter>(query, defaultLimit)
   const service = getUserService()
   try {
@@ -41,7 +43,7 @@ export  default async function UsersForm({ searchParams }: { searchParams: Promi
           <h2>{resource.users}</h2>
         </header>
         <div className="main-body">
-          <Form id="jobsForm" name="jobsForm" className="form" noValidate={true} action="/jobs">
+          <Form id="jobsForm" name="jobsForm" className="form" noValidate={true} action="/users">
             <section className="row search-group">
               <Search
                 className="col s12 m6 l4 xl6 search-input" 
@@ -113,8 +115,6 @@ export  default async function UsersForm({ searchParams }: { searchParams: Promi
       </div>
     )
   } catch (err) {
-    const headerList = await headers()
-    const pathname = headerList.get("x-current-path")
     logger.error(`Error at ${pathname}: ${toString(err)}`)
     return <Error title={resource.error_500_title} message={resource.error_500_message} />
   }

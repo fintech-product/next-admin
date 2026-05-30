@@ -1,4 +1,4 @@
-@import url("http://fonts.cdnfonts.com/css/roboto");
+@import "../fonts/Roboto/font.css";
 @import "../fonts/material-icon/css/material-icons.css";
 @import "./reset.css";
 @import "./checkbox.css";

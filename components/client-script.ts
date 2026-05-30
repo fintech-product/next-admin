@@ -171,6 +171,22 @@ export function isValidPattern(v: string, pattern: string, flags?: string | null
   return p.test(v)
 }
 
+export function normalizePhone(input: string): string {
+  let result = "";
+
+  for (let i = 0; i < input.length; i++) {
+    const c = input.charCodeAt(i);
+
+    // '+' = 43
+    // '0' = 48
+    // '9' = 57
+    if (c === 43 || (c >= 48 && c <= 57)) {
+      result += input[i];
+    }
+  }
+
+  return result;
+}
 export function removeSeparators(input?: string | null): string {
   if (!input) return ""
 
@@ -443,6 +459,7 @@ export function decode<T>(form: HTMLFormElement, currencySymbol?: string | null)
       if (nodeName === "INPUT" && type !== null) {
         nodeName = type.toUpperCase()
       }
+      const datatype = ele.getAttribute("data-type")
       if (nodeName !== "BUTTON" && nodeName !== "RESET" && nodeName !== "SUBMIT" && ele.getAttribute("data-skip") !== "true") {
         switch (type) {
           case "checkbox":
@@ -485,13 +502,18 @@ export function decode<T>(form: HTMLFormElement, currencySymbol?: string | null)
             }
             break
           default:
-            val = ele.value
+            console.log("go to check phone")
+            if (datatype === "phone") {
+              val = normalizePhone(ele.value)
+            } else {
+              val = ele.value
+            }
         }
         if (isDate && dateFormat && dateFormat.length > 0) {
           const d = parseDate(val, dateFormat)
           val = d.toString() === "Invalid Date" ? null : d
         }
-        const datatype = ele.getAttribute("data-type")
+
         let v: any = ele.value
         let symbol: string | null | undefined
         if (datatype === "currency" || datatype === "string-currency") {
@@ -528,6 +550,14 @@ export function decode<T>(form: HTMLFormElement, currencySymbol?: string | null)
   return obj
 }
 
+export function getRequiredError(ele: HTMLInputElement | HTMLSelectElement): string {
+  const form = ele.form
+  let msg: string | null = ""
+  if (form) {
+    msg = form.getAttribute("data-required-error")
+  }
+  return msg ? msg : "{0} is required."
+}
 export function validateElement(ele: HTMLInputElement, locale?: Locale | string | null, includeReadOnly?: boolean): string | null {
   if (!ele) {
     return null
@@ -565,8 +595,20 @@ export function validateElement(ele: HTMLInputElement, locale?: Locale | string 
   let value = ele.value
 
   const label = getLabel(ele)
+  if (ele.required && !ele.value) {
+    let msg = ele.getAttribute("data-required-error")
+    if (msg) {
+      addErrorMessage(ele, msg)
+      return msg
+    }
+    const errorFormat = getRequiredError(ele)
+    msg = formatText(errorFormat, label)
+    addErrorMessage(ele, msg)
+    return msg
+  }
 
   if (!value || value === "") {
+    removeError(ele)
     return null
   }
 
@@ -647,4 +689,53 @@ export function validateForm(form?: HTMLFormElement, locale?: Locale | string | 
     }
   }
   return valid
+}
+export interface ErrorMessage {
+  field: string
+  code: string
+  message?: string
+}
+export function showFormError(form?: HTMLFormElement, errors?: ErrorMessage[], focusFirst?: boolean, directParent?: boolean, includeId?: boolean): ErrorMessage[] {
+  if (!form || !errors || errors.length === 0) {
+    return []
+  }
+  let errorCtrl: HTMLInputElement | null = null
+  const errs: ErrorMessage[] = []
+  const length = errors.length
+  const len = form.length
+
+  for (let i = 0; i < length; i++) {
+    let hasControl = false
+    for (let j = 0; j < len; j++) {
+      const ele = form[j] as HTMLInputElement
+      const dataField = ele.getAttribute("data-field")
+      if (dataField === errors[i].field || ele.name === errors[i].field) {
+        addErrorMessage(ele, errors[i].message, directParent)
+        hasControl = true
+        if (!errorCtrl) {
+          errorCtrl = ele
+        }
+      }
+    }
+    if (hasControl === false) {
+      if (includeId) {
+        const ele = document.getElementById(errors[i].field)
+        if (ele) {
+          addErrorMessage(ele as HTMLInputElement, errors[i].message, directParent)
+        } else {
+          errs.push(errors[i])
+        }
+      } else {
+        errs.push(errors[i])
+      }
+    }
+  }
+  if (focusFirst !== false) {
+    focusFirst = true
+  }
+  if (errorCtrl && focusFirst === true) {
+    errorCtrl.focus()
+    errorCtrl.scrollIntoView()
+  }
+  return errs
 }

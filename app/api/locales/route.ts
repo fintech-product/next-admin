@@ -17,14 +17,11 @@ export async function POST(req: NextRequest) {
 
   const lang = account.language
   const resource = getResource(lang)
-
   const locale: Locale = await req.json()
 
   const errors = validate(locale, localeModel, resource)
-  console.log("Errors " + JSON.stringify(errors))
-
   if (errors.length > 0) {
-    return NextResponse.json({ errors: errors }, { status: 422 })
+    return NextResponse.json(errors, { status: 422 })
   }
 
   const service = getLocaleService()

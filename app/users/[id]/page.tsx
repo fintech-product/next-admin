@@ -1,6 +1,6 @@
 import { formatText } from "@components/client-script"
 import { Error } from "@components/error"
-import Input, { SubmitButton } from "@components/form"
+import { Input, phoneOnFocus, SubmitButton } from "@components/form"
 import { getCurrentUser } from "@lib/account"
 import { logger, toString } from "@lib/logger"
 import { email, Gender, getLang, getResource, Status } from "@resources"
@@ -10,13 +10,16 @@ import { redirect } from "next/navigation"
 import { formatPhone } from "web-one"
 
 export default async function UserForm({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params
+  const headerList = await headers()
+  const pathname = headerList.get("x-current-path") as string
   const account = await getCurrentUser()
   if (!account) {
-    redirect("/login")
+    redirect(`/login?redirect=${encodeURIComponent(pathname)}`)
   }
   const lang = getLang(account?.id)
   const resource = getResource(lang)
+
+  const { id } = await params
   const service = getUserService()
   try {
     const user = await service.load(id)
@@ -24,9 +27,8 @@ export default async function UserForm({ params }: { params: Promise<{ id: strin
       logger.warn(`User not found: ${id}`)
       return <Error title={resource.error_404_title} message={resource.error_404_message} />
     }
-    console.log("user " + JSON.stringify(user))
     return (
-      <form id="userForm" name="userForm" className="form" noValidate={true}>
+      <form id="userForm" name="userForm" className="form" noValidate={true} data-required-error={resource.error_required}>
         <header>
           <h2>{resource.user}</h2>
         </header>
@@ -117,10 +119,11 @@ export default async function UserForm({ params }: { params: Promise<{ id: strin
               type="tel"
               id="phone"
               name="phone"
+              dataType="phone"
               defaultValue={formatPhone(user.phone)}
+              onFocus={phoneOnFocus}
               maxLength={17}
               required={true}
-              requiredError={formatText(resource.error_required, resource.phone)}
               placeholder={resource.phone}
             />
           </label>
@@ -146,8 +149,6 @@ export default async function UserForm({ params }: { params: Promise<{ id: strin
       </form>
     )
   } catch (err) {
-    const headerList = await headers()
-    const pathname = headerList.get("x-current-path")
     logger.error(`Error at ${pathname}: ${toString(err)}`)
     return <Error title={resource.error_500_title} message={resource.error_500_message} />
   }

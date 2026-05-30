@@ -29,10 +29,14 @@ export const en = {
   role_assigned_users: "Assigned Users",
   role_roles_assign_to_groups: "Role Assign To Group(s)",
 
+  number: "No.",
   // Audit log
   audit_logs: "Audit logs",
   audit_log_time: "Time",
   audit_log_time_from: "Date time from",
   audit_log_time_to: "Date time to",
   audit_log_user: "Performed by",
+  action: "Action",
+  resource: "Resource",
+  ip: "IP",
 }

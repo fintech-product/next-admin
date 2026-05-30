@@ -17,14 +17,11 @@ export async function POST(req: NextRequest) {
 
   const lang = account.language
   const resource = getResource(lang)
-
   const role: Role = await req.json()
 
   const errors = validate(role, roleModel, resource)
-  console.log("Errors " + JSON.stringify(errors))
-
   if (errors.length > 0) {
-    return NextResponse.json({ errors: errors }, { status: 422 })
+    return NextResponse.json(errors, { status: 422 })
   }
 
   const service = getRoleService()

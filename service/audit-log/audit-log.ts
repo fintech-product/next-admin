@@ -23,7 +23,6 @@ export interface AuditLogFilter extends Filter {
 
 export interface AuditLogService {
   search(filter: AuditLogFilter, limit: number, page?: number, fields?: string[]): Promise<SearchResult<AuditLog>>
-  load(id: string): Promise<AuditLog | null>
 }
 
 export const auditLogModel: Attributes = {

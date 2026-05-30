@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "authen-service": "^0.4.2",
+    "authen-service": "^0.4.3",
     "bcryptjs": "^3.0.3",
     "config-plus": "^0.0.4",
     "jsonwebtoken": "^9.0.3",

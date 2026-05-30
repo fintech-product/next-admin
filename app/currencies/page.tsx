@@ -5,17 +5,17 @@ import { SortLink } from "@components/sort"
 import { getCurrentUser } from "@lib/account"
 import { logger, toString } from "@lib/logger"
 import { defaultLimit, getLang, getResource, getStatusName, limits } from "@resources"
-import { getRoleService } from "@service/role"
-import { RoleFilter } from "@service/role/role"
+import { getCurrencyService } from "@service/currency"
+import { CurrencyFilter } from "@service/currency/currency"
 import Form from "next/form"
 import { headers } from "next/headers"
 import Link from "next/link"
 import { redirect } from "next/navigation"
 import { buildFilter, buildSortSearch, getOffset, removeLimit, removePage } from "web-one"
 
-const fields = ["roleId", "roleName", "remark", "status"]
+const fields = ["code", "symbol", "decimalDigits", "status"]
 
-export  default async function RolesForm({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+export  default async function CurrenciesForm({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const headerList = await headers()
   const pathname = headerList.get("x-current-path") as string
   const account = await getCurrentUser()
@@ -26,8 +26,8 @@ export  default async function RolesForm({ searchParams }: { searchParams: Promi
   const resource = getResource(lang)
 
   const query = await searchParams
-  const filter = buildFilter<RoleFilter>(query, defaultLimit)
-  const service = getRoleService()
+  const filter = buildFilter<CurrencyFilter>(query, defaultLimit)
+  const service = getCurrencyService()
   try {
     const { list, total } = await service.search(filter, filter.limit, filter.page, fields)
 
@@ -39,10 +39,10 @@ export  default async function RolesForm({ searchParams }: { searchParams: Promi
     return (
       <div>
         <header>
-          <h2>{resource.roles}</h2>
+          <h2>{resource.currencies}</h2>
         </header>
         <div className="main-body">
-          <Form id="rolesForm" name="rolesForm" className="form" noValidate={true} action="/roles">
+          <Form id="currenciesForm" name="currenciesForm" className="form" noValidate={true} action="/currencies">
             <section className="row search-group">
               <Search
                 className="col s12 m6 l4 xl6 search-input" 
@@ -63,14 +63,14 @@ export  default async function RolesForm({ searchParams }: { searchParams: Promi
               <thead>
                 <tr>
                   <th>{resource.number}</th>
-                  <th data-field="roleId">
-                    <SortLink id="roleIdSort" href={sort.roleId.url} type={sort.roleId.type} text={resource.role_id}/>
+                  <th data-field="code">
+                    <SortLink id="codeSort" href={sort.code.url} type={sort.code.type} text={resource.currency_code}/>
                   </th>
-                  <th data-field="roleName">
-                    <SortLink id="roleNameSort" href={sort.roleName.url} type={sort.roleName.type} text={resource.role_name}/>
+                  <th data-field="symbol">
+                    <SortLink id="symbolSort" href={sort.symbol.url} type={sort.symbol.type} text={resource.currency_symbol}/>
                   </th>
-                  <th data-field="remark">
-                    <SortLink id="remarkSort" href={sort.remark.url} type={sort.remark.type} text={resource.remark}/>
+                  <th data-field="decimalDigits">
+                    <SortLink id="decimalDigitsSort" href={sort.decimalDigits.url} type={sort.decimalDigits.type} text={resource.currency_decimal_digits}/>
                   </th>
                   <th data-field="status">
                     <SortLink id="statusSort" href={sort.status.url} type={sort.status.type} text={resource.status}/>
@@ -78,16 +78,16 @@ export  default async function RolesForm({ searchParams }: { searchParams: Promi
                 </tr>
               </thead>
               <tbody>
-                {list.map((role, i) => {
+                {list.map((currency, i) => {
                   return (
                     <tr key={i}>
                       <td className="text-right">{offset + i + 1}</td>
-                      <td>{role.roleId}</td>
                       <td>
-                        <Link href={`/roles/${role.roleId}`} prefetch={false}>{role.roleName}</Link>
+                        <Link href={`/currencies/${currency.code}`} prefetch={false}>{currency.code}</Link>
                       </td>
-                      <td>{role.remark}</td>
-                      <td>{getStatusName(role.status, resource)}</td>
+                      <td>{currency.symbol}</td>
+                      <td className="text-right">{currency.decimalDigits}</td>
+                      <td>{getStatusName(currency.status, resource)}</td>
                     </tr>
                   )
                 })}
