@@ -1,4 +1,5 @@
 import { Error } from "@components/error"
+import { Input } from "@components/form"
 import { Pagination } from "@components/pagination"
 import Search from "@components/search"
 import { SortLink } from "@components/sort"
@@ -57,7 +58,29 @@ export default async function LocalesForm({ searchParams }: { searchParams: Prom
               <Pagination className="col s12 l4 xl3" total={total} size={filter.limit} page={filter.page} search={search} />
             </section>
             <section className="row search-group advance-search" hidden>
-              <label className="col s6 l3">
+              <label className="col s6 m3">
+                {resource.decimal_separator}
+                <Input
+                  type="text"
+                  id="decimalSeparator"
+                  name="decimalSeparator"
+                  defaultValue={filter.decimalSeparator}
+                  maxLength={1}
+                  placeholder={resource.decimal_separator}
+                />
+              </label>
+              <label className="col s6 m3">
+                {resource.group_separator}
+                <Input
+                  type="text"
+                  id="groupSeparator"
+                  name="groupSeparator"
+                  defaultValue={filter.groupSeparator}
+                  maxLength={1}
+                  placeholder={resource.group_separator}
+                />
+              </label>
+              <label className="col s6 m3">
                 {resource.date_format}
                 <input
                   type="text"
@@ -68,7 +91,7 @@ export default async function LocalesForm({ searchParams }: { searchParams: Prom
                   placeholder={resource.date_format}
                 />
               </label>
-              <label className="col s6 l3">
+              <label className="col s6 m3">
                 {resource.currency_decimal_digits}
                 <input
                   type="tel"
@@ -81,7 +104,7 @@ export default async function LocalesForm({ searchParams }: { searchParams: Prom
                   placeholder={resource.currency_decimal_digits}
                 />
               </label>
-              <label className="col s6 l3">
+              <label className="col s6 m3">
                 {resource.currency_pattern}
                 <input
                   type="tel"
@@ -94,7 +117,7 @@ export default async function LocalesForm({ searchParams }: { searchParams: Prom
                   placeholder={resource.currency_pattern}
                 />
               </label>
-              <label className="col s6 l3">
+              <label className="col s6 m3">
                 {resource.first_day_of_week}
                 <input
                   type="text"

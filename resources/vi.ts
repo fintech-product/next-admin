@@ -17,6 +17,7 @@ export const vi = {
   grey_mode: "Grey mode",
   classic_menu: "Classic menu",
   modern_menu: "Modern menu",
+  language: "Ngôn ngữ",
 
   search: "Tìm kiếm",
   submit: "Submit",

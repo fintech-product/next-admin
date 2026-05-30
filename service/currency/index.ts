@@ -1,14 +1,9 @@
 import { db } from "@lib/db"
 import { UseCase } from "onecore"
-import { DB, Repository } from "sql-core"
-import { Currency, CurrencyFilter, currencyModel, CurrencyRepository, CurrencyService } from "./currency"
+import { Currency, CurrencyFilter, CurrencyRepository, CurrencyService } from "./currency"
+import { SqlCurrencyRepository } from "./repository"
 export * from "./currency"
 
-export class SqlCurrencyRepository extends Repository<Currency, string, CurrencyFilter> implements CurrencyRepository {
-  constructor(db: DB) {
-    super(db, "currency", currencyModel)
-  }
-}
 export class CurrencyUseCase extends UseCase<Currency, string, CurrencyFilter> implements CurrencyService {
   constructor(repository: CurrencyRepository) {
     super(repository)

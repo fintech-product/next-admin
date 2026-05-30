@@ -17,6 +17,7 @@ export const en = {
   grey_mode: "Grey mode",
   classic_menu: "Classic menu",
   modern_menu: "Modern menu",
+  language: "Language",
 
   search: "Search",
   submit: "Submit",

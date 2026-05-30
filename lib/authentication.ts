@@ -14,6 +14,7 @@ const authConfig = {
   maxPasswordFailed: 5,
   account: {
     displayName: "displayname",
+    dateFormat: "date_format",
   },
   userStatus: {
     activated: "A",
@@ -33,7 +34,7 @@ const authConfig = {
     lockedUntilTime: "locked_until_time",
   },
   query: `
-      select u.user_id, u.username, u.display_name, email, u.status, u.max_password_age, 
+      select u.user_id, u.username, u.display_name, u.language, u.dateformat as date_format, email, u.status, u.max_password_age, 
         p.password, p.success_time, p.fail_time, p.fail_count, p.locked_until_time, p.changed_time
       from users u
       inner join passwords p
@@ -69,9 +70,7 @@ const map = {
 
 let authenticator: Authenticator<User, string> | undefined
 export function getAuthenticator(): Authenticator<User, string> {
-  console.log("enter getAuthenticator 0")
   if (!authenticator) {
-    console.log("enter getAuthenticator 1")
     const status = initializeStatus(authConfig.status)
     const userRepository = useUserRepository<string, SqlAuthTemplateConfig>(db, authConfig, map)
     const privilegeRepository = new PrivilegeRepository(db.query, authConfig.privileges)

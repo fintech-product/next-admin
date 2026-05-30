@@ -27,9 +27,9 @@ export default async function RoleForm({ params }: { params: Promise<{ id: strin
       return <Error title={resource.error_404_title} message={resource.error_404_message} />
     }
     return (
-      <form id="contactForm" name="contactForm" className="form" noValidate={true}>
+      <form id="currencyForm" name="currencyForm" className="form" noValidate={true}>
         <header>
-          <h2>{resource.contact}</h2>
+          <h2>{resource.currency}</h2>
         </header>
         <div className="row">
           <label className="col s12 m6 required">
