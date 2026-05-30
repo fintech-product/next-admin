@@ -7,7 +7,7 @@ import { getItemService } from "@service/settings"
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 
-export default async function SettingsForm({ params }: { params: Promise<{ id: string }> }) {
+export default async function SettingsForm() {
   const headerList = await headers()
   const pathname = headerList.get("x-current-path") as string
   const account = await getCurrentUser()

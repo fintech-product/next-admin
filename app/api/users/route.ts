@@ -30,9 +30,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(res, { status })
   } catch (err) {
     logger.error(`Error at POST /users: ${toString(err)}`)
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 }
-    )
+    return new NextResponse("Internal Server Error", {
+      status: 500,
+      headers: { "Content-Type": "text/plain" },
+    })
   }
 }
