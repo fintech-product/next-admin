@@ -5,7 +5,7 @@ import Search from "@components/search"
 import { SortLink } from "@components/sort"
 import { getCurrentUser } from "@lib/account"
 import { logger, toString } from "@lib/logger"
-import { defaultLimit, getLang, getResource, limits } from "@resources"
+import { defaultLimit, getResource, limits } from "@resources"
 import { getLocaleService, LocaleFilter } from "@service/locale"
 import Form from "next/form"
 import { headers } from "next/headers"
@@ -22,8 +22,7 @@ export default async function LocalesForm({ searchParams }: { searchParams: Prom
   if (!account) {
     redirect(`/login?redirect=${encodeURIComponent(pathname)}`)
   }
-  const lang = getLang(account?.id)
-  const resource = getResource(lang)
+  const resource = getResource(account?.language)
 
   const query = await searchParams
   const filter = buildFilter<LocaleFilter>(query, defaultLimit)

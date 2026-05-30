@@ -3,7 +3,7 @@ import { Error } from "@components/error"
 import { Input, SubmitButton } from "@components/form"
 import { getCurrentUser } from "@lib/account"
 import { logger, toString } from "@lib/logger"
-import { getLang, getResource, Status } from "@resources"
+import { getResource, Status } from "@resources"
 import { getRoleService } from "@service/role"
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
@@ -15,8 +15,7 @@ export default async function RoleForm({ params }: { params: Promise<{ id: strin
   if (!account) {
     redirect(`/login?redirect=${encodeURIComponent(pathname)}`)
   }
-  const lang = getLang(account?.id)
-  const resource = getResource(lang)
+  const resource = getResource(account?.language)
 
   const { id } = await params
   const service = getRoleService()

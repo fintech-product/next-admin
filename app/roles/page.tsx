@@ -4,7 +4,7 @@ import Search from "@components/search"
 import { SortLink } from "@components/sort"
 import { getCurrentUser } from "@lib/account"
 import { logger, toString } from "@lib/logger"
-import { defaultLimit, getLang, getResource, getStatusName, limits } from "@resources"
+import { defaultLimit, getResource, getStatusName, limits } from "@resources"
 import { getRoleService, RoleFilter } from "@service/role"
 import Form from "next/form"
 import { headers } from "next/headers"
@@ -14,15 +14,14 @@ import { buildFilter, buildSortSearch, getOffset, removeLimit, removePage } from
 
 const fields = ["roleId", "roleName", "remark", "status"]
 
-export  default async function RolesForm({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+export default async function RolesForm({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const headerList = await headers()
   const pathname = headerList.get("x-current-path") as string
   const account = await getCurrentUser()
   if (!account) {
     redirect(`/login?redirect=${encodeURIComponent(pathname)}`)
   }
-  const lang = getLang(account?.id)
-  const resource = getResource(lang)
+  const resource = getResource(account?.language)
 
   const query = await searchParams
   const filter = buildFilter<RoleFilter>(query, defaultLimit)
@@ -44,7 +43,7 @@ export  default async function RolesForm({ searchParams }: { searchParams: Promi
           <Form id="rolesForm" name="rolesForm" className="form" noValidate={true} action="/roles">
             <section className="row search-group">
               <Search
-                className="col s12 m6 l4 xl6 search-input" 
+                className="col s12 m6 l4 xl6 search-input"
                 limit={filter.limit}
                 limits={limits}
                 limitSearch={limitSearch}
@@ -63,16 +62,16 @@ export  default async function RolesForm({ searchParams }: { searchParams: Promi
                 <tr>
                   <th>{resource.number}</th>
                   <th data-field="roleId">
-                    <SortLink id="roleIdSort" href={sort.roleId.url} type={sort.roleId.type} text={resource.role_id}/>
+                    <SortLink id="roleIdSort" href={sort.roleId.url} type={sort.roleId.type} text={resource.role_id} />
                   </th>
                   <th data-field="roleName">
-                    <SortLink id="roleNameSort" href={sort.roleName.url} type={sort.roleName.type} text={resource.role_name}/>
+                    <SortLink id="roleNameSort" href={sort.roleName.url} type={sort.roleName.type} text={resource.role_name} />
                   </th>
                   <th data-field="remark">
-                    <SortLink id="remarkSort" href={sort.remark.url} type={sort.remark.type} text={resource.remark}/>
+                    <SortLink id="remarkSort" href={sort.remark.url} type={sort.remark.type} text={resource.remark} />
                   </th>
                   <th data-field="status">
-                    <SortLink id="statusSort" href={sort.status.url} type={sort.status.type} text={resource.status}/>
+                    <SortLink id="statusSort" href={sort.status.url} type={sort.status.type} text={resource.status} />
                   </th>
                 </tr>
               </thead>

@@ -2,7 +2,7 @@ import { Error } from "@components/error"
 import { SubmitButton } from "@components/form"
 import { getCurrentUser } from "@lib/account"
 import { logger, toString } from "@lib/logger"
-import { getLang, getResource } from "@resources"
+import { getResource } from "@resources"
 import { getItemService } from "@service/settings"
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
@@ -14,9 +14,7 @@ export default async function SettingsForm({ params }: { params: Promise<{ id: s
   if (!account) {
     redirect(`/login?redirect=${encodeURIComponent(pathname)}`)
   }
-  console.log("lang " + account.language + " " + account.dateFormat + " " + JSON.stringify(account))
-  const lang = getLang(account?.id)
-  const resource = getResource(lang)
+  const resource = getResource(account?.language)
 
   const itemService = getItemService()
   try {

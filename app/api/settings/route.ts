@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
     const status = res > 0 ? 200 : 410
     return NextResponse.json(res, { status })
   } catch (err) {
-    logger.error(`Error at POST /settingss: ${toString(err)}`)
+    logger.error(`Error at POST /settings: ${toString(err)}`)
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }

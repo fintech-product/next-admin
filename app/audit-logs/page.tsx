@@ -5,7 +5,7 @@ import { Pagination } from "@components/pagination"
 import { SortLink } from "@components/sort"
 import { getCurrentUser } from "@lib/account"
 import { logger, toString } from "@lib/logger"
-import { defaultLimit, getDateFormat, getLang, getResource, limits } from "@resources"
+import { defaultLimit, getDateFormat, getResource, limits } from "@resources"
 import { AuditLogFilter, getAuditLogService } from "@service/audit-log"
 import Form from "next/form"
 import { headers } from "next/headers"
@@ -14,16 +14,15 @@ import { buildFilter, buildSortSearch, datetimeToString, formatFullDateTime, get
 
 const fields = ["id", "time", "resource", "action", "status", "userId", "ip", "remark"]
 
-export  default async function AuditLogsForm({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+export default async function AuditLogsForm({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const headerList = await headers()
   const pathname = headerList.get("x-current-path") as string
   const account = await getCurrentUser()
   if (!account) {
     redirect(`/login?redirect=${encodeURIComponent(pathname)}`)
   }
-  const lang = getLang(account?.id)
-  const resource = getResource(lang)
-  const dateFormat = getDateFormat(lang)
+  const resource = getResource(account?.language)
+  const dateFormat = getDateFormat(account?.language)
 
   const query = await searchParams
   const filter = buildFilter<AuditLogFilter>(query, defaultLimit)
@@ -78,12 +77,12 @@ export  default async function AuditLogsForm({ searchParams }: { searchParams: P
               </label>
             </section>
             <section className="section search">
-            <label>
-              {resource.page_size}
-              <Limit id="limitBtn" className="limit" text={filter.limit} search={limitSearch} items={limits} dropDownId="limitDropdown" />
-            </label>
-            <button type="submit" id="searchBtn" className="btn-search">{resource.search}</button>
-          </section>
+              <label>
+                {resource.page_size}
+                <Limit id="limitBtn" className="limit" text={filter.limit} search={limitSearch} items={limits} dropDownId="limitDropdown" />
+              </label>
+              <button type="submit" id="searchBtn" className="btn-search">{resource.search}</button>
+            </section>
           </Form>
           <form className="list-result">
             <div className="table-responsive">
@@ -92,25 +91,25 @@ export  default async function AuditLogsForm({ searchParams }: { searchParams: P
                   <tr>
                     <th>{resource.number}</th>
                     <th data-field="time">
-                      <SortLink id="timeSort" href={sort.time.url} type={sort.time.type} text={resource.audit_log_time}/>
+                      <SortLink id="timeSort" href={sort.time.url} type={sort.time.type} text={resource.audit_log_time} />
                     </th>
                     <th data-field="resource">
-                      <SortLink id="resourceSort" href={sort.resource.url} type={sort.resource.type} text={resource.resource}/>
+                      <SortLink id="resourceSort" href={sort.resource.url} type={sort.resource.type} text={resource.resource} />
                     </th>
                     <th data-field="action">
-                      <SortLink id="actionSort" href={sort.action.url} type={sort.action.type} text={resource.action}/>
+                      <SortLink id="actionSort" href={sort.action.url} type={sort.action.type} text={resource.action} />
                     </th>
                     <th data-field="status">
-                      <SortLink id="statusSort" href={sort.status.url} type={sort.status.type} text={resource.status}/>
+                      <SortLink id="statusSort" href={sort.status.url} type={sort.status.type} text={resource.status} />
                     </th>
                     <th data-field="userId">
-                      <SortLink id="userIdSort" href={sort.userId.url} type={sort.userId.type} text={resource.audit_log_user}/>
+                      <SortLink id="userIdSort" href={sort.userId.url} type={sort.userId.type} text={resource.audit_log_user} />
                     </th>
                     <th data-field="ip">
-                      <SortLink id="ipSort" href={sort.ip.url} type={sort.ip.type} text={resource.ip}/>
+                      <SortLink id="ipSort" href={sort.ip.url} type={sort.ip.type} text={resource.ip} />
                     </th>
                     <th data-field="remark">
-                      <SortLink id="remarkSort" href={sort.remark.url} type={sort.remark.type} text={resource.remark}/>
+                      <SortLink id="remarkSort" href={sort.remark.url} type={sort.remark.type} text={resource.remark} />
                     </th>
                   </tr>
                 </thead>

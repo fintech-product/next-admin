@@ -3,7 +3,7 @@ import { Error } from "@components/error"
 import { Input, phoneOnFocus, SubmitButton } from "@components/form"
 import { getCurrentUser } from "@lib/account"
 import { logger, toString } from "@lib/logger"
-import { email, Gender, getLang, getResource, Status } from "@resources"
+import { email, Gender, getResource, Status } from "@resources"
 import { getUserService } from "@service/user"
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
@@ -16,8 +16,7 @@ export default async function UserForm({ params }: { params: Promise<{ id: strin
   if (!account) {
     redirect(`/login?redirect=${encodeURIComponent(pathname)}`)
   }
-  const lang = getLang(account?.id)
-  const resource = getResource(lang)
+  const resource = getResource(account?.language)
 
   const { id } = await params
   const service = getUserService()

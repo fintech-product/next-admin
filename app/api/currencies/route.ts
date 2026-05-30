@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
   const service = getCurrencyService()
   try {
     const res = await service.update(currency)
-    const status = res > 0 ? 200 : res === 0 ? 410 : 409
+    const status = res > 0 ? 200 : 410
     return NextResponse.json(res, { status })
   } catch (err) {
     logger.error(`Error at POST /currencies: ${toString(err)}`)

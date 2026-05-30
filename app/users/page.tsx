@@ -4,7 +4,7 @@ import Search from "@components/search"
 import { SortLink } from "@components/sort"
 import { getCurrentUser } from "@lib/account"
 import { logger, toString } from "@lib/logger"
-import { defaultLimit, getLang, getResource, getStatusName, limits } from "@resources"
+import { defaultLimit, getResource, getStatusName, limits } from "@resources"
 import { getUserService, UserFilter } from "@service/user"
 import Form from "next/form"
 import { headers } from "next/headers"
@@ -14,7 +14,7 @@ import { buildFilter, buildSortSearch, getOffset, removeLimit, removePage } from
 
 const fields = ["userId", "username", "email", "displayName", "status"]
 
-export  default async function UsersForm({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+export default async function UsersForm({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const headerList = await headers()
   const pathname = headerList.get("x-current-path") as string
   console.log("path " + pathname)
@@ -22,8 +22,7 @@ export  default async function UsersForm({ searchParams }: { searchParams: Promi
   if (!account) {
     redirect(`/login?redirect=${encodeURIComponent(pathname)}`)
   }
-  const lang = getLang(account?.id)
-  const resource = getResource(lang)
+  const resource = getResource(account?.language)
 
   const query = await searchParams
   const filter = buildFilter<UserFilter>(query, defaultLimit)
@@ -45,7 +44,7 @@ export  default async function UsersForm({ searchParams }: { searchParams: Promi
           <Form id="jobsForm" name="jobsForm" className="form" noValidate={true} action="/users">
             <section className="row search-group">
               <Search
-                className="col s12 m6 l4 xl6 search-input" 
+                className="col s12 m6 l4 xl6 search-input"
                 limit={filter.limit}
                 limits={limits}
                 limitSearch={limitSearch}
@@ -76,19 +75,19 @@ export  default async function UsersForm({ searchParams }: { searchParams: Promi
                 <tr>
                   <th>{resource.number}</th>
                   <th data-field="userId">
-                    <SortLink id="userIdSort" href={sort.userId.url} type={sort.userId.type} text={resource.user_id}/>
+                    <SortLink id="userIdSort" href={sort.userId.url} type={sort.userId.type} text={resource.user_id} />
                   </th>
                   <th data-field="username">
-                    <SortLink id="usernameSort" href={sort.username.url} type={sort.username.type} text={resource.username}/>
+                    <SortLink id="usernameSort" href={sort.username.url} type={sort.username.type} text={resource.username} />
                   </th>
                   <th data-field="email">
-                    <SortLink id="emailSort" href={sort.email.url} type={sort.email.type} text={resource.email}/>
+                    <SortLink id="emailSort" href={sort.email.url} type={sort.email.type} text={resource.email} />
                   </th>
                   <th data-field="displayName">
-                    <SortLink id="displayNameSort" href={sort.displayName.url} type={sort.displayName.type} text={resource.display_name}/>
+                    <SortLink id="displayNameSort" href={sort.displayName.url} type={sort.displayName.type} text={resource.display_name} />
                   </th>
                   <th data-field="status">
-                    <SortLink id="statusSort" href={sort.status.url} type={sort.status.type} text={resource.status}/>
+                    <SortLink id="statusSort" href={sort.status.url} type={sort.status.type} text={resource.status} />
                   </th>
                 </tr>
               </thead>
