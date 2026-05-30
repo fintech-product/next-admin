@@ -25,6 +25,24 @@ export function ClientLayout({ nav, header, children }: { nav: ReactNode; header
   )
 }
 
+export function RelativeLink({ href, className, children }: { href: string; className?: string; children: ReactNode }) {
+  const pathname = usePathname();
+  const isActive = pathname && pathname.startsWith(href);
+  if (className) {
+    return <Link href={href} prefetch={false} className={isActive ? className + " active" : className} >{children}</Link>
+  } else {
+    return <Link href={href} prefetch={false} className={isActive ? "active" : ""} >{children}</Link>
+  }
+}
+export function ClientLink({ href, className, children }: { href: string; className?: string; children: ReactNode }) {
+  const pathname = usePathname();
+  const isActive = pathname === href;
+  if (className) {
+    return <Link href={href} prefetch={false} className={isActive ? className + " active" : className}>{children}</Link>
+  } else {
+    return <Link href={href} prefetch={false} className={isActive ? "active" : ""} > {children} </Link>
+  }
+}
 export function ClientNav({ href, children }: { href: string; children: ReactNode }) {
   const pathname = usePathname()
   const isActive = pathname === href
@@ -32,6 +50,7 @@ export function ClientNav({ href, children }: { href: string; children: ReactNod
     <li className={isActive ? "active" : ""}>{children}</li>
   )
 }
+
 export function SubList({ children }: { children: ReactNode }) {
   return (
     <div className="menu-item" onClick={e => toggleMenuItem(e.target as HTMLElement)}>{children}</div>
