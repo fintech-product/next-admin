@@ -14,9 +14,7 @@ export async function POST(req: NextRequest) {
       headers: { "Content-Type": "text/plain" },
     })
   }
-
-  const lang = account.language
-  const resource = getResource(lang)
+  const resource = getResource(account.language)
   const settings: Settings = await req.json()
   settings.id = account.id
 

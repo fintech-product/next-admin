@@ -13,10 +13,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       headers: { "Content-Type": "text/plain" },
     })
   }
-
-  const lang = account.language
-  const resource = getResource(lang)
-
+  const resource = getResource(account.language)
   const { id } = await params
   const user: User = await req.json()
   user.userId = id

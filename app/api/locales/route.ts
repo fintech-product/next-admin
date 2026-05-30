@@ -14,9 +14,7 @@ export async function POST(req: NextRequest) {
       headers: { "Content-Type": "text/plain" },
     })
   }
-
-  const lang = account.language
-  const resource = getResource(lang)
+  const resource = getResource(account.language)
   const locale: Locale = await req.json()
 
   const errors = validate(locale, localeModel, resource)

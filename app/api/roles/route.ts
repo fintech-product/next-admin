@@ -14,9 +14,7 @@ export async function POST(req: NextRequest) {
       headers: { "Content-Type": "text/plain" },
     })
   }
-
-  const lang = account.language
-  const resource = getResource(lang)
+  const resource = getResource(account.language)
   const role: Role = await req.json()
 
   const errors = validate(role, roleModel, resource)
