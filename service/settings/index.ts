@@ -8,7 +8,6 @@ export const userModel: Attributes = {
     column: "user_id",
     key: true,
     length: 40,
-    operator: "="
   },
   language: {
     required: true,

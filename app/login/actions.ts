@@ -1,7 +1,7 @@
 "use server"
 
 import { getAuthenticator } from "@lib/authentication"
-import { getResource } from "@resources"
+import { getDateFormat, getDefaultLang, getResource } from "@resources"
 import { getFirstPath } from "authen-service"
 import { sign } from "jsonwebtoken"
 import { cookies } from "next/headers"
@@ -43,6 +43,12 @@ export async function loginAction(prevState: LoginState, formData: FormData): Pr
     const account = result.user
     const cookieStore = await cookies()
 
+    if (!account.language) {
+      account.language = getDefaultLang()
+    }
+    if (!account.dateFormat) {
+      account.dateFormat = getDateFormat(account.language)
+    }
     const displayName = account.displayName || account.username || account.email || account.id
     const token = sign(
       {
