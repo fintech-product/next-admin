@@ -171,53 +171,6 @@ export function isValidPattern(v: string, pattern: string, flags?: string | null
   return p.test(v)
 }
 
-export function normalizePhone(input: string): string {
-  let result = "";
-
-  for (let i = 0; i < input.length; i++) {
-    const c = input.charCodeAt(i);
-
-    // '+' = 43
-    // '0' = 48
-    // '9' = 57
-    if (c === 43 || (c >= 48 && c <= 57)) {
-      result += input[i];
-    }
-  }
-
-  return result;
-}
-export function removeSeparators(input?: string | null): string {
-  if (!input) return ""
-
-  const len = input.length
-  const buffer = new Array<string>(len)
-  let write = 0
-
-  for (let i = 0; i < len; i++) {
-    const c = input[i]
-
-    // skip unwanted characters
-    if (
-      c === " " || // normal space
-      c === "\u00A0" || // non-breaking space
-      c === "," ||
-      c === "." ||
-      c === "٬" || // Arabic thousands separator
-      c === "$" ||
-      c === "€" ||
-      c === "£" ||
-      c === "¥"
-    ) {
-      continue
-    }
-
-    buffer[write++] = c
-  }
-
-  // Avoid creating a large intermediate array via slice
-  return write === len ? input : buffer.slice(0, write).join("")
-}
 export function formatInteger(v?: number | null, groupSeparator: string = ","): string {
   if (v == null || !Number.isFinite(v)) {
     return ""
@@ -346,8 +299,7 @@ function setKey(_object: any, _isArrayKey: boolean, _key: string, _nextValue: an
   }
   return _object
 }
-const r1 = / |,|\$|€|£|¥|'|٬|،| /g
-const r2 = / |\.|\$|€|£|¥|'|٬|،| /g
+
 function parseDate(v: string, format?: string): Date {
   if (!format || format.length === 0) {
     format = "MM/DD/YYYY"
@@ -386,7 +338,7 @@ function getDecimalSeparator(ele: HTMLInputElement): string {
   }
   return separator ? separator : "."
 }
-export function getGroupSeparator(ele: HTMLInputElement): string {
+export function getGroupSeparator(ele: HTMLInputElement): string | null | undefined {
   let separator = ele.getAttribute("data-group-separator")
   if (!separator) {
     const form = ele.form
@@ -394,7 +346,7 @@ export function getGroupSeparator(ele: HTMLInputElement): string {
       separator = form.getAttribute("data-group-separator")
     }
   }
-  return separator === "." ? "." : ","
+  return separator
 }
 export function getChipsByElement(container?: Element | null): string[] {
   if (container) {
@@ -429,6 +381,75 @@ export function getChipObjects(container: Element | null | undefined, value: str
   } else {
     return []
   }
+}
+export function normalizePhone(s?: string | null): string {
+  if (!s) {
+    return ""
+  }
+  const len = s.length
+  const buf = new Array<string>(len)
+  let j = 0
+  for (let i = 0; i < len; i++) {
+    const c = s.charCodeAt(i)
+    if (c === 43 || (c >= 48 && c <= 57)) {
+      buf[j++] = s[i]
+    }
+  }
+  return j === len ? buf.join("") : buf.slice(0, j).join("")
+}
+export function normalizeInteger(s?: string | null): string {
+  if (!s) {
+    return ""
+  }
+  const len = s.length
+  const buf = new Array<string>(len)
+  let j = 0
+  for (let i = 0; i < len; i++) {
+    const c = s.charCodeAt(i)
+    if (c >= 48 && c <= 57) {
+      buf[j++] = s[i]
+    }
+  }
+  return j === len ? buf.join("") : buf.slice(0, j).join("")
+}
+
+// Keep a single dot
+export function removeSeparators(s?: string | null): string {
+  if (!s) {
+    return ""
+  }
+  const len = s.length
+  const buffer = new Uint16Array(len) // preallocate max possible
+  let write = 0
+
+  for (let i = 0; i < len; i++) {
+    const c = s.charCodeAt(i)
+    // '0'–'9' (48–57), '.' (46)
+    if ((c >= 48 && c <= 57) || c === 46) {
+      buffer[write++] = c
+    }
+  }
+  // Convert only the used portion to string
+  return String.fromCharCode.apply(null, buffer.subarray(0, write) as any)
+}
+// Keep digits 0–9 ; Replace , and ٫ (Arabic decimal separator) → . ; Remove everything else => < 100 char: Array<string> version can actually be just as fast or faster due to lower overhead
+export function normalizeNumber(s?: string | null): string {
+  if (!s) {
+    return ""
+  }
+  const len = s.length
+  const buf = new Array<string>(len)
+  let j = 0
+  for (let i = 0; i < len; i++) {
+    const c = s.charCodeAt(i)
+
+    if (c >= 48 && c <= 57) {
+      buf[j++] = s[i]
+    } else if (c === 44 || c === 1643) {
+      buf[j++] = "."
+    }
+  }
+  return j === len ? buf.join("") : buf.slice(0, j).join("")
 }
 export function decode<T>(form: HTMLFormElement, currencySymbol?: string | null): T {
   const dateFormat = form.getAttribute("data-date-format")
@@ -514,21 +535,16 @@ export function decode<T>(form: HTMLFormElement, currencySymbol?: string | null)
           val = d.toString() === "Invalid Date" ? null : d
         }
 
-        let v: any = ele.value
-        let symbol: string | null | undefined
-        if (datatype === "currency" || datatype === "string-currency") {
-          symbol = ele.getAttribute("data-currency-symbol")
-          if (!symbol) {
-            symbol = currencySymbol
-          }
-          if (symbol && symbol.length > 0 && v.indexOf(symbol) >= 0) {
-            v = v.replace(symbol, "")
-          }
-        }
-        if (type === "number" || datatype === "currency" || datatype === "integer" || datatype === "number") {
+        let v = ele.value
+        if (datatype === "phone" || datatype === "fax") {
+          val = normalizePhone(v)
+        } else if (datatype === "integer") {
+          const n0 = normalizeInteger(v)
+          val = isNaN(n0 as any) ? undefined : parseFloat(v)
+        } else if (datatype === "number" || datatype === "currency") {
           const decimalSeparator = getDecimalSeparator(ele)
-          v = decimalSeparator === "," ? v.replace(r2, "") : v.replace(r1, "")
-          val = isNaN(v) ? null : parseFloat(v)
+          const n0 = decimalSeparator === "," || decimalSeparator === "٫" ? normalizeNumber(v) : removeSeparators(v)
+          val = isNaN(n0 as any) ? undefined : parseFloat(v)
         }
         setValue(obj, name, val) // obj[name] = val;
       }
