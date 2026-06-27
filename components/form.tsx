@@ -1,8 +1,7 @@
 "use client"
 
 import { FocusEvent, FocusEventHandler, MouseEvent, ReactNode } from "react"
-import { formatInteger } from "web-one"
-import { addClass, addErrorMessage, addRequiredError, checkMax, checkMin, decode, formatNumber, formatText, getContainer, getDecimalSeparator, getGroupSeparator, getIntegerError, getLabel, getRequiredError, isValidPattern, normalizeInteger, normalizeNumber, normalizePhone, removeClasses, removeError, removeSeparators, showFormError, validateForm } from "./client-script"
+import { addClass, addErrorMessage, addRequiredError, checkMax, checkMin, decode, formatInteger, formatNumber, formatText, getContainer, getDecimals, getDecimalSeparator, getGroupSeparator, getIntegerError, getLabel, getRequiredError, isValidPattern, normalizeInteger, normalizeNumber, normalizePhone, removeClasses, removeError, removeSeparators, showFormError, validateForm } from "./client-script"
 
 interface SubmitProps {
   id?: string
@@ -175,15 +174,6 @@ export function checkRequiredAndPatern(e: FocusEvent<HTMLInputElement>, msg?: st
   }
 }
 
-export function numberOnFocus(e: FocusEvent<HTMLInputElement>) {
-  materialOnFocus(e)
-  const decimalSeparator = getDecimalSeparator(e.target)
-  const v = e.target.value
-  const n = decimalSeparator === "," || decimalSeparator === "٫" ? normalizeNumber(v) : removeSeparators(v)
-  if (e.target.value !== n) {
-    e.target.value = n
-  }
-}
 export function integerOnFocus(e: FocusEvent<HTMLInputElement>) {
   materialOnFocus(e)
   const v = normalizeInteger(e.target.value)
@@ -223,7 +213,16 @@ export function validateIntegerOnBlur(e: FocusEvent<HTMLInputElement>, groupSepa
     }
   }
 }
-export function validateNumberOnBlur(e: FocusEvent<HTMLInputElement>, decimalSeparator?: string | null, groupSeparator?: string | null) {
+export function numberOnFocus(e: FocusEvent<HTMLInputElement>) {
+  materialOnFocus(e)
+  const decimalSeparator = getDecimalSeparator(e.target)
+  const v = e.target.value
+  const n = decimalSeparator === "," || decimalSeparator === "٫" ? normalizeNumber(v) : removeSeparators(v)
+  if (e.target.value !== n) {
+    e.target.value = n
+  }
+}
+export function numberOnBlur(e: FocusEvent<HTMLInputElement>) {
   removeError(e.target)
   const ele = e.currentTarget as HTMLInputElement
   const label = getLabel(ele)
@@ -231,7 +230,8 @@ export function validateNumberOnBlur(e: FocusEvent<HTMLInputElement>, decimalSep
     return addRequiredError(ele, label)
   }
   if (ele.value) {
-    const n0 = normalizeInteger(ele.value)
+    const decimalSeparator = getDecimalSeparator(ele)
+    const n0 = decimalSeparator === "," || decimalSeparator === "٫" ? normalizeNumber(ele.value) : removeSeparators(ele.value)
     if (isNaN(n0 as any)) {
       const errorFormat = getIntegerError(ele)
       const msg = formatText(errorFormat, label)
@@ -240,7 +240,38 @@ export function validateNumberOnBlur(e: FocusEvent<HTMLInputElement>, decimalSep
       const n = parseFloat(n0)
       checkMin(ele, label, n)
       checkMax(ele, label, n)
-      const format = groupSeparator ? formatNumber(n, 2, decimalSeparator, groupSeparator) : n.toString()
+      const decimals = getDecimals(ele)
+      let format = decimals < 0 ? n.toString() : n.toFixed()
+      if (decimalSeparator === "," || decimalSeparator === "٫") {
+        format = format.replace(decimalSeparator, ".")
+      }
+      if (ele.value !== format) {
+        ele.value = format
+      }
+    }
+  }
+}
+export function numberOnBlurAndFormat(e: FocusEvent<HTMLInputElement>) {
+  removeError(e.target)
+  const ele = e.currentTarget as HTMLInputElement
+  const label = getLabel(ele)
+  if (ele.required && !ele.value) {
+    return addRequiredError(ele, label)
+  }
+  if (ele.value) {
+    const decimalSeparator = getDecimalSeparator(ele)
+    const n0 = decimalSeparator === "," || decimalSeparator === "٫" ? normalizeNumber(ele.value) : removeSeparators(ele.value)
+    if (isNaN(n0 as any)) {
+      const errorFormat = getIntegerError(ele)
+      const msg = formatText(errorFormat, label)
+      addErrorMessage(ele, msg)
+    } else {
+      const n = parseFloat(n0)
+      checkMin(ele, label, n)
+      checkMax(ele, label, n)
+      const decimals = getDecimals(ele)
+      const groupSeparator = getGroupSeparator(ele)
+      const format = formatNumber(n, decimals, decimalSeparator, groupSeparator)
       if (ele.value !== format) {
         ele.value = format
       }

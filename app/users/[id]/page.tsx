@@ -1,3 +1,4 @@
+import { BackButton } from "@components/client"
 import { formatText } from "@components/client-script"
 import { Error } from "@components/error"
 import { Input, phoneOnFocus, SubmitButton } from "@components/form"
@@ -29,6 +30,7 @@ export default async function UserForm({ params }: { params: Promise<{ id: strin
     return (
       <form id="userForm" name="userForm" className="form" noValidate={true} data-required-error={resource.error_required}>
         <header>
+          <BackButton id="backBtn" name="backBtn" className="btn-back" />
           <h2>{resource.user}</h2>
         </header>
         <div className="row">

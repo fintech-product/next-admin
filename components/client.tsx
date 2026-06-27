@@ -164,7 +164,7 @@ interface Props {
   className?: string
   children?: ReactNode
 }
-export default function BackButton({ id, name, className, children }: Props) {
+export function BackButton({ id, name, className, children }: Props) {
   const router = useRouter();
   return (
     <button type="button" id={id} name={name} className={className} onClick={() => router.back()}>

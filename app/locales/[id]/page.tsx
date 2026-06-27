@@ -1,6 +1,6 @@
-import BackButton from "@components/client"
+import { BackButton } from "@components/client"
 import { Error } from "@components/error"
-import { Input, SubmitButton } from "@components/form"
+import { Input, integerOnBlur, integerOnFocus, SubmitButton } from "@components/form"
 import { getCurrentUser } from "@lib/account"
 import { logger, toString } from "@lib/logger"
 import { getResource } from "@resources"
@@ -114,6 +114,10 @@ export default async function LocaleForm({ params }: { params: Promise<{ id: str
               className="text-right"
               defaultValue={locale.firstDayOfWeek}
               maxLength={1}
+              min={1}
+              max={7}
+              onFocus={integerOnFocus}
+              onBlur={integerOnBlur}
               required={true}
               placeholder={resource.first_day_of_week}
             />
@@ -190,6 +194,8 @@ export default async function LocaleForm({ params }: { params: Promise<{ id: str
               maxLength={1}
               min={0}
               max={3}
+              onFocus={integerOnFocus}
+              onBlur={integerOnBlur}
               placeholder={resource.currency_decimal_digits}
             />
           </label>
@@ -205,6 +211,8 @@ export default async function LocaleForm({ params }: { params: Promise<{ id: str
               maxLength={1}
               min={0}
               max={3}
+              onFocus={integerOnFocus}
+              onBlur={integerOnBlur}
               placeholder={resource.currency_pattern}
             />
           </label>

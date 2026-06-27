@@ -371,6 +371,19 @@ export function parseDate(v: string, format?: string): Date {
   const day = parseInt(valueItems[iday], 10)
   return new Date(year, month, day)
 }
+export function getDecimals(ele: HTMLInputElement): number {
+  let decimals = ele.getAttribute("data-decimals")
+  if (!decimals) {
+    const form = ele.form
+    if (form) {
+      decimals = form.getAttribute("data-decimals")
+    }
+  }
+  if (!decimals || isNaN(decimals as any)) {
+    return -1
+  }
+  return parseFloat(decimals)
+}
 export function getDecimalSeparator(ele: HTMLInputElement): string {
   let separator = ele.getAttribute("data-decimal-separator")
   if (!separator) {

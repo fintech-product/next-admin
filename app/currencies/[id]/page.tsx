@@ -1,4 +1,4 @@
-import BackButton from "@components/client"
+import { BackButton } from "@components/client"
 import { formatText } from "@components/client-script"
 import { Error } from "@components/error"
 import { Input, integerOnBlur, integerOnFocus, SubmitButton } from "@components/form"
