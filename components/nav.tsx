@@ -7,7 +7,7 @@ export interface Props {
   resource?: StringMap
 }
 export interface MenuItem {
-  id: string
+  id?: string
   name: string
   path: string
   resource?: string

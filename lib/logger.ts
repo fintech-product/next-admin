@@ -6,7 +6,6 @@ export const globalForDB = globalThis as unknown as {
   logger?: Logger
 }
 export function getLogger(): Logger {
-  console.log("enter get Logger")
   const cfg = merge(config, process.env, env, process.env.NODE_ENV)
   return createLogger(cfg.log)
 }

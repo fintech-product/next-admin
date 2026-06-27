@@ -1,11 +1,12 @@
 import BackButton from "@components/client"
 import { formatText } from "@components/client-script"
 import { Error } from "@components/error"
-import { Input, SubmitButton } from "@components/form"
+import { Input, integerOnBlur, integerOnFocus, SubmitButton } from "@components/form"
 import { getCurrentUser } from "@lib/account"
 import { logger, toString } from "@lib/logger"
 import { getResource, Status } from "@resources"
 import { getCurrencyService } from "@service/currency"
+import { getLocale, usLocale } from "locale-service"
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 
@@ -16,6 +17,7 @@ export default async function CurrencyForm({ params }: { params: Promise<{ id: s
   if (!account) {
     redirect(`/login?redirect=${encodeURIComponent(pathname)}`)
   }
+  const locale = getLocale(account?.language) || usLocale
   const resource = getResource(account?.language)
 
   const { id } = await params
@@ -27,7 +29,12 @@ export default async function CurrencyForm({ params }: { params: Promise<{ id: s
       return <Error title={resource.error_404_title} message={resource.error_404_message} />
     }
     return (
-      <form id="currencyForm" name="currencyForm" className="form" noValidate={true}>
+      <form id="currencyForm" name="currencyForm" className="form" noValidate={true}
+        data-required-error={resource.error_required}
+        data-integer-error={resource.error_integer}
+        data-min-error={resource.error_min}
+        data-max-error={resource.error_max}
+        data-group-separator={locale.groupSeparator}>
         <header>
           <BackButton id="backBtn" name="backBtn" className="btn-back" />
           <h2>{resource.currency}</h2>
@@ -65,10 +72,13 @@ export default async function CurrencyForm({ params }: { params: Promise<{ id: s
               type="tel"
               id="decimalDigits"
               name="decimalDigits"
+              className="right-align"
               defaultValue={currency.decimalDigits}
               maxLength={1}
               min={0}
               max={3}
+              onFocus={integerOnFocus}
+              onBlur={integerOnBlur}
               placeholder={resource.currency_decimal_digits}
             />
           </label>
