@@ -1,4 +1,3 @@
-
 import { DB } from "onecore"
 import { Repository } from "sql-core"
 import { Locale, LocaleFilter, localeModel, LocaleRepository } from "./locale"

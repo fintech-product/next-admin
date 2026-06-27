@@ -1,14 +1,8 @@
 import { db } from "@lib/db"
-import { UseCase } from "onecore"
-import { Country, CountryFilter, CountryRepository, CountryService } from "./country"
+import { CountryService } from "./country"
 import { SqlCountryRepository } from "./repository"
+import { CountryUseCase } from "./service"
 export * from "./country"
-
-export class CountryUseCase extends UseCase<Country, string, CountryFilter> implements CountryService {
-  constructor(repository: CountryRepository) {
-    super(repository)
-  }
-}
 
 let service: CountryService | undefined
 export function getCountryService(): CountryService {

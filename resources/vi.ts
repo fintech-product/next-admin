@@ -27,7 +27,7 @@ export const vi = {
   msg_no_data_found: "No data found.",
   msg_search_result_sequence: "Items {0} to {1}.",
   msg_search_result_page_sequence: "Items {0} to {1} of {2}. Page {3} of {4}.",
-  page_size: "Page Size",
+  page_size: "Kích thước trang",
 
   header_confirm: "Confirm",
   header_error: "Error",
