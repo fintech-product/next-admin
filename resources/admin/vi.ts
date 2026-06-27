@@ -31,7 +31,7 @@ export const vi = {
 
   number: "Số",
   // Audit log
-  audit_logs: "Nhật ký kiểm tra",
+  audit_logs: "Lịch sử hoạt động",
   audit_log_time: "Thời gian",
   audit_log_time_from: "Từ ngày giờ",
   audit_log_time_to: "Đến ngày giờ",

@@ -96,7 +96,9 @@ export default async function CurrenciesForm({ searchParams }: { searchParams: P
                     <tr key={i}>
                       <td className="text-right">{offset + i + 1}</td>
                       <td>
-                        <Link href={`/currencies/${currency.code}`} prefetch={false}>{currency.code}</Link>
+                        <Link href={`/currencies/${currency.code}`} prefetch={false}>
+                          {currency.code}
+                        </Link>
                       </td>
                       <td>{currency.symbol}</td>
                       <td className="text-right">{currency.decimalDigits}</td>

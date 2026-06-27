@@ -1,7 +1,33 @@
 "use client"
 
 import { FocusEvent, FocusEventHandler, MouseEvent, ReactNode } from "react"
-import { addClass, addErrorMessage, addRequiredError, checkMax, checkMin, decode, formatInteger, formatNumber, formatText, getContainer, getDecimals, getDecimalSeparator, getGroupSeparator, getIntegerError, getLabel, getRequiredError, isValidPattern, normalizeInteger, normalizeNumber, normalizePhone, removeClasses, removeError, removeSeparators, showFormError, validateForm } from "./client-script"
+import {
+  addClass,
+  addErrorMessage,
+  addRequiredError,
+  checkMax,
+  checkMin,
+  decode,
+  formatInteger,
+  formatNumber,
+  formatText,
+  getContainer,
+  getDecimals,
+  getDecimalSeparator,
+  getGroupSeparator,
+  getIntegerError,
+  getLabel,
+  getRequiredError,
+  isValidPattern,
+  normalizeInteger,
+  normalizeNumber,
+  normalizePhone,
+  removeClasses,
+  removeError,
+  removeSeparators,
+  showFormError,
+  validateForm,
+} from "./client-script"
 
 interface SubmitProps {
   id?: string
@@ -139,7 +165,6 @@ export function checkOnBlur(e: FocusEvent<HTMLInputElement>, required?: boolean,
     checkRequiredAndPatern(e, requiredError, patern, paternError)
   } else {
     if (patern) {
-      console.log("patern " + patern)
       if (!isValidPattern(input.value, patern)) {
         const error = paternError ? paternError : "Pattern Error"
         addErrorMessage(input, error)
@@ -190,6 +215,7 @@ export function integerOnBlurAndFormat(e: FocusEvent<HTMLInputElement>) {
   validateIntegerOnBlur(e, groupSeparator)
 }
 export function validateIntegerOnBlur(e: FocusEvent<HTMLInputElement>, groupSeparator?: string | null) {
+  materialOnBlur(e)
   removeError(e.target)
   const ele = e.currentTarget as HTMLInputElement
   const label = getLabel(ele)
@@ -223,6 +249,7 @@ export function numberOnFocus(e: FocusEvent<HTMLInputElement>) {
   }
 }
 export function numberOnBlur(e: FocusEvent<HTMLInputElement>) {
+  materialOnBlur(e)
   removeError(e.target)
   const ele = e.currentTarget as HTMLInputElement
   const label = getLabel(ele)
@@ -252,6 +279,7 @@ export function numberOnBlur(e: FocusEvent<HTMLInputElement>) {
   }
 }
 export function numberOnBlurAndFormat(e: FocusEvent<HTMLInputElement>) {
+  materialOnBlur(e)
   removeError(e.target)
   const ele = e.currentTarget as HTMLInputElement
   const label = getLabel(ele)
@@ -284,9 +312,7 @@ export function phoneOnFocus(e: FocusEvent<HTMLInputElement>) {
     e.target.value = v
   }
 }
-export function phoneOnBlur(e: FocusEvent<HTMLInputElement>) {
-
-}
+export function phoneOnBlur(e: FocusEvent<HTMLInputElement>) {}
 export function inputOnFocus(e: FocusEvent<HTMLInputElement>) {
   removeError(e.target)
 }

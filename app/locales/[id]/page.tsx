@@ -5,6 +5,7 @@ import { getCurrentUser } from "@lib/account"
 import { logger, toString } from "@lib/logger"
 import { getResource } from "@resources"
 import { getLocaleService } from "@service/locale"
+import { getLocale, usLocale } from "locale-service"
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 
@@ -15,6 +16,7 @@ export default async function LocaleForm({ params }: { params: Promise<{ id: str
   if (!account) {
     redirect(`/login?redirect=${encodeURIComponent(pathname)}`)
   }
+  const locale = getLocale(account?.language) || usLocale
   const resource = getResource(account?.language)
 
   const { id } = await params
@@ -26,7 +28,17 @@ export default async function LocaleForm({ params }: { params: Promise<{ id: str
       return <Error title={resource.error_404_title} message={resource.error_404_message} />
     }
     return (
-      <form id="currencyForm" name="currencyForm" className="form" noValidate={true}>
+      <form
+        id="currencyForm"
+        name="currencyForm"
+        className="form"
+        noValidate={true}
+        data-required-error={resource.error_required}
+        data-integer-error={resource.error_integer}
+        data-min-error={resource.error_min}
+        data-max-error={resource.error_max}
+        data-group-separator={locale.groupSeparator}
+      >
         <header>
           <BackButton id="backBtn" name="backBtn" className="btn-back" />
           <h2>{resource.currency}</h2>
@@ -34,27 +46,11 @@ export default async function LocaleForm({ params }: { params: Promise<{ id: str
         <div className="row">
           <label className="col s12 m6 required">
             {resource.locale_code}
-            <Input
-              type="text"
-              id="code"
-              name="code"
-              defaultValue={locale.code}
-              maxLength={11}
-              required={true}
-              placeholder={resource.locale_code}
-            />
+            <Input type="text" id="code" name="code" defaultValue={locale.code} maxLength={11} required={true} placeholder={resource.locale_code} />
           </label>
           <label className="col s12 m6 required">
             {resource.locale_name}
-            <Input
-              type="text"
-              id="code"
-              name="code"
-              defaultValue={locale.name}
-              maxLength={100}
-              required={true}
-              placeholder={resource.locale_name}
-            />
+            <Input type="text" id="code" name="code" defaultValue={locale.name} maxLength={100} required={true} placeholder={resource.locale_name} />
           </label>
           <label className="col s12 m6 required">
             {resource.locale_native_name}

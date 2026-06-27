@@ -27,7 +27,7 @@ export default async function RoleForm({ params }: { params: Promise<{ id: strin
       return <Error title={resource.error_404_title} message={resource.error_404_message} />
     }
     return (
-      <form id="currencyForm" name="currencyForm" className="form" noValidate={true}>
+      <form id="currencyForm" name="currencyForm" className="form" noValidate={true} data-required-error={resource.error_required}>
         <header>
           <BackButton id="backBtn" name="backBtn" className="btn-back" />
           <h2>{resource.currency}</h2>
@@ -61,14 +61,7 @@ export default async function RoleForm({ params }: { params: Promise<{ id: strin
           </label>
           <label className="col s12 m6">
             {resource.remark}
-            <Input
-              type="text"
-              id="remark"
-              name="remark"
-              defaultValue={role.remark}
-              maxLength={120}
-              placeholder={resource.email}
-            />
+            <Input type="text" id="remark" name="remark" defaultValue={role.remark} maxLength={120} placeholder={resource.email} />
           </label>
           <label className="col s12 m6">
             {resource.status}

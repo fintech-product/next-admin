@@ -1,9 +1,9 @@
 import { Attributes, Filter, SearchResult } from "onecore"
 
 export class Status {
-  static readonly Draft = 'D'
-  static readonly Submitted = 'S'
-  static readonly Approved = 'A'
+  static readonly Draft = "D"
+  static readonly Submitted = "S"
+  static readonly Approved = "A"
 }
 
 export interface Currency {
@@ -40,21 +40,25 @@ export const currencyModel: Attributes = {
   code: {
     key: true,
     length: 3,
-    q: true
+    q: true,
+    resource: "currency_code",
   },
   symbol: {
     length: 4,
-    q: true
+    q: true,
+    resource: "currency_symbol",
   },
   decimalDigits: {
     column: "decimal_digits",
     type: "integer",
     operator: "=",
     min: 0,
-    max: 3
+    max: 3,
+    resource: "currency_decimal_digits",
   },
   status: {
     length: 1,
-    operator: "="
+    operator: "=",
+    resource: "status",
   },
 }

@@ -29,12 +29,17 @@ export default async function CurrencyForm({ params }: { params: Promise<{ id: s
       return <Error title={resource.error_404_title} message={resource.error_404_message} />
     }
     return (
-      <form id="currencyForm" name="currencyForm" className="form" noValidate={true}
+      <form
+        id="currencyForm"
+        name="currencyForm"
+        className="form"
+        noValidate={true}
         data-required-error={resource.error_required}
         data-integer-error={resource.error_integer}
         data-min-error={resource.error_min}
         data-max-error={resource.error_max}
-        data-group-separator={locale.groupSeparator}>
+        data-group-separator={locale.groupSeparator}
+      >
         <header>
           <BackButton id="backBtn" name="backBtn" className="btn-back" />
           <h2>{resource.currency}</h2>
@@ -49,8 +54,8 @@ export default async function CurrencyForm({ params }: { params: Promise<{ id: s
               defaultValue={currency.code}
               maxLength={100}
               required={true}
-              requiredError={formatText(resource.error_required, resource.currency_id)}
-              placeholder={resource.currency_id}
+              requiredError={formatText(resource.error_required, resource.currency_code)}
+              placeholder={resource.currency_code}
             />
           </label>
           <label className="col s12 m6 required">
@@ -62,8 +67,8 @@ export default async function CurrencyForm({ params }: { params: Promise<{ id: s
               defaultValue={currency.symbol}
               maxLength={5}
               required={true}
-              requiredError={formatText(resource.error_required, resource.currency_name)}
-              placeholder={resource.currency_name}
+              requiredError={formatText(resource.error_required, resource.currency_symbol)}
+              placeholder={resource.currency_symbol}
             />
           </label>
           <label className="col s12 m6">

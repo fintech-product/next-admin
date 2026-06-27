@@ -13,7 +13,23 @@ import Link from "next/link"
 import { redirect } from "next/navigation"
 import { buildFilter, buildSortSearch, getOffset, removeLimit, removePage } from "web-one"
 
-const fields = ["code", "name", "nativeName", "countryName", "nativeCountryName", "dateFormat", "firstDayOfWeek", "decimalSeparator", "groupSeparator", "currencyCode", "currencySymbol", "currencyDecimalDigits", "currencyPattern", "currencySample", "status"]
+const fields = [
+  "code",
+  "name",
+  "nativeName",
+  "countryName",
+  "nativeCountryName",
+  "dateFormat",
+  "firstDayOfWeek",
+  "decimalSeparator",
+  "groupSeparator",
+  "currencyCode",
+  "currencySymbol",
+  "currencyDecimalDigits",
+  "currencyPattern",
+  "currencySample",
+  "status",
+]
 
 export default async function LocalesForm({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const headerList = await headers()
@@ -81,14 +97,7 @@ export default async function LocalesForm({ searchParams }: { searchParams: Prom
               </label>
               <label className="col s6 m3">
                 {resource.date_format}
-                <input
-                  type="text"
-                  id="dateFormat"
-                  name="dateFormat"
-                  defaultValue={filter.dateFormat}
-                  maxLength={12}
-                  placeholder={resource.date_format}
-                />
+                <input type="text" id="dateFormat" name="dateFormat" defaultValue={filter.dateFormat} maxLength={12} placeholder={resource.date_format} />
               </label>
               <label className="col s6 m3">
                 {resource.currency_decimal_digits}
@@ -149,7 +158,12 @@ export default async function LocalesForm({ searchParams }: { searchParams: Prom
                     <SortLink id="countryNameSort" href={sort.countryName.url} type={sort.countryName.type} text={resource.country_name} />
                   </th>
                   <th data-field="nativeCountryName">
-                    <SortLink id="nativeCountryNameSort" href={sort.nativeCountryName.url} type={sort.nativeCountryName.type} text={resource.country_native_name} />
+                    <SortLink
+                      id="nativeCountryNameSort"
+                      href={sort.nativeCountryName.url}
+                      type={sort.nativeCountryName.type}
+                      text={resource.country_native_name}
+                    />
                   </th>
                   <th data-field="dateFormat">
                     <SortLink id="dateFormatSort" href={sort.dateFormat.url} type={sort.dateFormat.type} text={resource.date_format} />
@@ -170,7 +184,12 @@ export default async function LocalesForm({ searchParams }: { searchParams: Prom
                     <SortLink id="currencySymbolSort" href={sort.currencySymbol.url} type={sort.currencySymbol.type} text={resource.currency_symbol} />
                   </th>
                   <th data-field="currencyDecimalDigits">
-                    <SortLink id="currencyDecimalDigitsSort" href={sort.currencyDecimalDigits.url} type={sort.currencyDecimalDigits.type} text={resource.currency_decimal_digits} />
+                    <SortLink
+                      id="currencyDecimalDigitsSort"
+                      href={sort.currencyDecimalDigits.url}
+                      type={sort.currencyDecimalDigits.type}
+                      text={resource.currency_decimal_digits}
+                    />
                   </th>
                   <th data-field="currencyPattern">
                     <SortLink id="currencyPatternSort" href={sort.currencyPattern.url} type={sort.currencyPattern.type} text={resource.currency_pattern} />
@@ -187,7 +206,9 @@ export default async function LocalesForm({ searchParams }: { searchParams: Prom
                       <td className="text-right">{offset + i + 1}</td>
                       <td>{item.code}</td>
                       <td>
-                        <Link href={`/locales/${item.code}`} prefetch={false}>{item.name}</Link>
+                        <Link href={`/locales/${item.code}`} prefetch={false}>
+                          {item.name}
+                        </Link>
                       </td>
                       <td>{item.nativeName}</td>
                       <td>{item.countryName}</td>

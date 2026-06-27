@@ -77,23 +77,11 @@ export default async function UserForm({ params }: { params: Promise<{ id: strin
             {resource.gender}
             <div className="radio-group">
               <label>
-                <input
-                  type="radio"
-                  id="gender"
-                  name="gender"
-                  value={Gender.Male}
-                  defaultChecked={user.gender === Gender.Male}
-                />
+                <input type="radio" id="gender" name="gender" value={Gender.Male} defaultChecked={user.gender === Gender.Male} />
                 {resource.male}
               </label>
               <label>
-                <input
-                  type="radio"
-                  id="gender"
-                  name="gender"
-                  value={Gender.Female}
-                  defaultChecked={user.gender === Gender.Female}
-                />
+                <input type="radio" id="gender" name="gender" value={Gender.Female} defaultChecked={user.gender === Gender.Female} />
                 {resource.female}
               </label>
             </div>

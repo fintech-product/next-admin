@@ -82,7 +82,9 @@ export default async function RolesForm({ searchParams }: { searchParams: Promis
                       <td className="text-right">{offset + i + 1}</td>
                       <td>{role.roleId}</td>
                       <td>
-                        <Link href={`/roles/${role.roleId}`} prefetch={false}>{role.roleName}</Link>
+                        <Link href={`/roles/${role.roleId}`} prefetch={false}>
+                          {role.roleName}
+                        </Link>
                       </td>
                       <td>{role.remark}</td>
                       <td>{getStatusName(role.status, resource)}</td>

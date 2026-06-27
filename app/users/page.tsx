@@ -17,7 +17,6 @@ const fields = ["userId", "username", "email", "displayName", "status"]
 export default async function UsersForm({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const headerList = await headers()
   const pathname = headerList.get("x-current-path") as string
-  console.log("path " + pathname)
   const account = await getCurrentUser()
   if (!account) {
     redirect(`/login?redirect=${encodeURIComponent(pathname)}`)
@@ -59,13 +58,7 @@ export default async function UsersForm({ searchParams }: { searchParams: Promis
             <section className="row search-group advance-search inline" hidden>
               <label className="col s12 m6">
                 {resource.email}
-                <input
-                  type="text"
-                  id="email"
-                  name="email"
-                  maxLength={80}
-                  defaultValue={filter.email}
-                />
+                <input type="text" id="email" name="email" maxLength={80} defaultValue={filter.email} />
               </label>
             </section>
           </Form>
@@ -98,7 +91,9 @@ export default async function UsersForm({ searchParams }: { searchParams: Promis
                       <td className="text-right">{offset + i + 1}</td>
                       <td>{user.userId}</td>
                       <td>
-                        <Link href={`/users/${user.userId}`} prefetch={false}>{user.username}</Link>
+                        <Link href={`/users/${user.userId}`} prefetch={false}>
+                          {user.username}
+                        </Link>
                       </td>
                       <td>{user.email}</td>
                       <td>{user.displayName}</td>

@@ -371,6 +371,7 @@ export function parseDate(v: string, format?: string): Date {
   const day = parseInt(valueItems[iday], 10)
   return new Date(year, month, day)
 }
+
 export function getDecimals(ele: HTMLInputElement): number {
   let decimals = ele.getAttribute("data-decimals")
   if (!decimals) {
@@ -404,6 +405,7 @@ export function getGroupSeparator(ele: HTMLInputElement): string | null | undefi
   }
   return separator
 }
+
 export function getChipsByElement(container?: Element | null): string[] {
   if (container) {
     return Array.from(container.querySelectorAll<HTMLElement>(".chip")).map((chip) => {
@@ -850,7 +852,13 @@ export interface ErrorMessage {
   code: string
   message?: string
 }
-export function showFormError(form?: HTMLFormElement, errors?: ErrorMessage[], focusFirst?: boolean, directParent?: boolean, includeId?: boolean): ErrorMessage[] {
+export function showFormError(
+  form?: HTMLFormElement,
+  errors?: ErrorMessage[],
+  focusFirst?: boolean,
+  directParent?: boolean,
+  includeId?: boolean,
+): ErrorMessage[] {
   if (!form || !errors || errors.length === 0) {
     return []
   }

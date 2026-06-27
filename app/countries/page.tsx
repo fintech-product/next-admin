@@ -13,7 +13,19 @@ import Link from "next/link"
 import { redirect } from "next/navigation"
 import { buildFilter, buildSortSearch, getOffset, removeLimit, removePage } from "web-one"
 
-const fields = ["countryCode", "countryName", "nativeCountryName", "decimalSeparator", "groupSeparator", "currencyCode", "currencySymbol", "currencyDecimalDigits", "currencyPattern", "currencySample", "status"]
+const fields = [
+  "countryCode",
+  "countryName",
+  "nativeCountryName",
+  "decimalSeparator",
+  "groupSeparator",
+  "currencyCode",
+  "currencySymbol",
+  "currencyDecimalDigits",
+  "currencyPattern",
+  "currencySample",
+  "status",
+]
 
 export default async function CountriesForm({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const headerList = await headers()
@@ -33,7 +45,6 @@ export default async function CountriesForm({ searchParams }: { searchParams: Pr
     const search = removePage(query)
     const limitSearch = removeLimit(query)
     const sort = buildSortSearch(query, fields, filter.sort)
-    console.log("sort " + JSON.stringify(sort))
     const offset = getOffset(filter.limit, filter.page)
 
     return (
@@ -120,7 +131,12 @@ export default async function CountriesForm({ searchParams }: { searchParams: Pr
                     <SortLink id="countryNameSort" href={sort.countryName.url} type={sort.countryName.type} text={resource.country_name} />
                   </th>
                   <th data-field="nativeCountryName">
-                    <SortLink id="nativeCountryNameSort" href={sort.nativeCountryName.url} type={sort.nativeCountryName.type} text={resource.country_native_name} />
+                    <SortLink
+                      id="nativeCountryNameSort"
+                      href={sort.nativeCountryName.url}
+                      type={sort.nativeCountryName.type}
+                      text={resource.country_native_name}
+                    />
                   </th>
                   <th data-field="decimalSeparator">
                     <SortLink id="decimalSeparatorSort" href={sort.decimalSeparator.url} type={sort.decimalSeparator.type} text={resource.decimal_separator} />
@@ -135,7 +151,12 @@ export default async function CountriesForm({ searchParams }: { searchParams: Pr
                     <SortLink id="currencySymbolSort" href={sort.currencySymbol.url} type={sort.currencySymbol.type} text={resource.currency_symbol} />
                   </th>
                   <th data-field="currencyDecimalDigits">
-                    <SortLink id="currencyDecimalDigitsSort" href={sort.currencyDecimalDigits.url} type={sort.currencyDecimalDigits.type} text={resource.currency_decimal_digits} />
+                    <SortLink
+                      id="currencyDecimalDigitsSort"
+                      href={sort.currencyDecimalDigits.url}
+                      type={sort.currencyDecimalDigits.type}
+                      text={resource.currency_decimal_digits}
+                    />
                   </th>
                   <th data-field="currencyPattern">
                     <SortLink id="currencyPatternSort" href={sort.currencyPattern.url} type={sort.currencyPattern.type} text={resource.currency_pattern} />
@@ -155,7 +176,9 @@ export default async function CountriesForm({ searchParams }: { searchParams: Pr
                       <td className="text-right">{offset + i + 1}</td>
                       <td>{item.countryCode}</td>
                       <td>
-                        <Link href={`/countries/${item.countryCode}`} prefetch={false}>{item.countryName}</Link>
+                        <Link href={`/countries/${item.countryCode}`} prefetch={false}>
+                          {item.countryName}
+                        </Link>
                       </td>
                       <td>{item.nativeCountryName}</td>
                       <td>{item.decimalSeparator}</td>

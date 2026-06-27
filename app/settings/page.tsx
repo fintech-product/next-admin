@@ -28,28 +28,24 @@ export default async function SettingsForm() {
         <div className="row">
           <label className="col s12 m6 required">
             {resource.language}
-            <select
-              id="language"
-              name="language"
-              defaultValue={account.language}
-              required={true}>
+            <select id="language" name="language" defaultValue={account.language} required={true}>
               {languages.map((item, i) => {
                 return (
-                  <option key={item.value} value={item.value}>{item.text}</option>
+                  <option key={item.value} value={item.value}>
+                    {item.text}
+                  </option>
                 )
               })}
             </select>
           </label>
           <label className="col s12 m6 required">
             {resource.date_format}
-            <select
-              id="dateFormat"
-              name="dateFormat"
-              defaultValue={account.dateFormat}
-              required={true}>
+            <select id="dateFormat" name="dateFormat" defaultValue={account.dateFormat} required={true}>
               {dateFormats.map((item, i) => {
                 return (
-                  <option key={item.value} value={item.value}>{item.text}</option>
+                  <option key={item.value} value={item.value}>
+                    {item.text}
+                  </option>
                 )
               })}
             </select>
