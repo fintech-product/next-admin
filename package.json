@@ -24,7 +24,7 @@
     "react-dom": "^19.2.7",
     "sql-core": "^0.1.4",
     "validation-core": "^1.1.1",
-    "web-one": "^0.0.12"
+    "web-one": "^0.0.14"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.10",

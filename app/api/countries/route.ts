@@ -4,6 +4,7 @@ import { getResource } from "@resources"
 import { Country, countryModel, getCountryService } from "@service/country"
 import { NextRequest, NextResponse } from "next/server"
 import { validate } from "validation-core"
+import { isSuccessful } from "web-one"
 
 export async function POST(req: NextRequest) {
   const account = await getCurrentUser()
@@ -24,7 +25,7 @@ export async function POST(req: NextRequest) {
   const service = getCountryService()
   try {
     const res = await service.update(country)
-    const status = res > 0 ? 200 : 410
+    const status = isSuccessful(res) ? 200 : 410
     return NextResponse.json(res, { status })
   } catch (err) {
     logger.error(`Error at POST /countries: ${toString(err)}`)
