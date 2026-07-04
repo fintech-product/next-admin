@@ -3,22 +3,22 @@ import { formatText } from "@components/client-script"
 import { Error } from "@components/error"
 import { Input, integerOnBlur, integerOnFocus, SubmitButton } from "@components/form"
 import { getCurrentUser } from "@lib/account"
-import { logger, toString } from "@lib/logger"
+import { authorize, hasPrivilege } from "@lib/authorizor"
+import { logError, logForbidden, logger } from "@lib/logger"
 import { getResource, Status } from "@resources"
 import { getCurrencyService } from "@service/currency"
 import { getLocale, usLocale } from "locale-service"
-import { headers } from "next/headers"
-import { redirect } from "next/navigation"
+import { read, write } from "web-one"
 
 export default async function CurrencyForm({ params }: { params: Promise<{ id: string }> }) {
-  const headerList = await headers()
-  const pathname = headerList.get("x-current-path") as string
   const account = await getCurrentUser()
-  if (!account) {
-    redirect(`/login?redirect=${encodeURIComponent(pathname)}`)
+  const resource = getResource(account?.language)
+  const permission = await authorize(1)
+  if (!hasPrivilege(permission, read)) {
+    logForbidden(account)
+    return <Error title={resource.error_403_title} message={resource.error_403_message} />
   }
   const locale = getLocale(account?.language) || usLocale
-  const resource = getResource(account?.language)
 
   const { id } = await params
   const service = getCurrencyService()
@@ -28,6 +28,35 @@ export default async function CurrencyForm({ params }: { params: Promise<{ id: s
       logger.warn(`Currency not found: ${id}`)
       return <Error title={resource.error_404_title} message={resource.error_404_message} />
     }
+
+    const canWrite = hasPrivilege(permission, write)
+    if (!canWrite) {
+      return (
+        <form id="currencyForm" name="currencyForm" className="form" noValidate={true}>
+          <header>
+            <h2>{resource.currency}</h2>
+          </header>
+          <div>
+            <dl className="data-list row">
+              <dt className="col s6 l3 xl2">{resource.currency_code}</dt>
+              <dd className="col s6 l9 xl10">{currency.code}</dd>
+              <dt className="col s6 l3 xl2">{resource.currency_symbol}</dt>
+              <dd className="col s6 l9 xl10">{currency.symbol}</dd>
+              <dt className="col s6 l3 xl2">{resource.currency_decimal_digits}</dt>
+              <dd className="col s6 l9 xl10">{currency.decimalDigits}</dd>
+              <dt className="col s6 l3 xl2">{resource.status}</dt>
+              <dd className="col s6 l9 xl10">{currency.status === "A" ? resource.active : resource.inactive}</dd>
+            </dl>
+          </div>
+          <footer>
+            <BackButton type="submit" id="closeBtn" name="closeBtn">
+              {resource.close}
+            </BackButton>
+          </footer>
+        </form>
+      )
+    }
+
     return (
       <form
         id="currencyForm"
@@ -109,7 +138,7 @@ export default async function CurrencyForm({ params }: { params: Promise<{ id: s
       </form>
     )
   } catch (err) {
-    logger.error(`Error at ${pathname}: ${toString(err)}`)
+    logError(err)
     return <Error title={resource.error_500_title} message={resource.error_500_message} />
   }
 }

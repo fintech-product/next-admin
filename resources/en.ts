@@ -109,6 +109,8 @@ export const en = {
   error_503: "Service Unavailable",
   error_504: "Gateway Timeout",
 
+  error_403_title: "404 Forbidden",
+  error_403_message: "Sorry, you do not have permission for this page.",
   error_404_title: "404 Not found",
   error_404_message: "Sorry, the page you are looking for could not be found.",
   error_500_title: "500 Internal Server Error",

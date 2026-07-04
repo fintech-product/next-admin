@@ -108,6 +108,8 @@ export const vi = {
   error_503: "Service Unavailable",
   error_504: "Gateway Timeout",
 
+  error_403_title: "404 Forbidden",
+  error_403_message: "Xin lỗi, bạn không có quyền truy cập trang này.",
   error_404_title: "404 Not found",
   error_404_message: "Xin lỗi, trang bạn đang tìm kiếm không tìm thấy.",
   error_500_title: "500 Internal Server Error",

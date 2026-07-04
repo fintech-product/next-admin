@@ -176,15 +176,17 @@ function findParent(e: HTMLElement | null | undefined, className: string): HTMLE
 }
 
 interface Props {
+  type?: "button" | "submit" | "reset"
   id?: string
   name?: string
   className?: string
   children?: ReactNode
 }
-export function BackButton({ id, name, className, children }: Props) {
+export function BackButton({ type, id, name, className, children }: Props) {
   const router = useRouter()
+  const t = type || "button"
   return (
-    <button type="button" id={id} name={name} className={className} onClick={() => router.back()}>
+    <button type={t} id={id} name={name} className={className} onClick={() => router.back()}>
       {children}
     </button>
   )

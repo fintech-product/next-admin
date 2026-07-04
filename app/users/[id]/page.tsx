@@ -3,24 +3,20 @@ import { formatText } from "@components/client-script"
 import { Error } from "@components/error"
 import { Input, phoneOnFocus, SubmitButton } from "@components/form"
 import { getCurrentUser } from "@lib/account"
-import { hasPermission } from "@lib/authorizor"
-import { logger, toString } from "@lib/logger"
+import { authorize, hasPrivilege } from "@lib/authorizor"
+import { logError, logForbidden, logger } from "@lib/logger"
 import { email, Gender, getResource, Status } from "@resources"
 import { getUserService } from "@service/user"
-import { headers } from "next/headers"
-import { redirect } from "next/navigation"
-import { formatPhone, write } from "web-one"
+import { formatPhone, read, write } from "web-one"
 
 export default async function UserForm({ params }: { params: Promise<{ id: string }> }) {
-  const headerList = await headers()
-  const pathname = headerList.get("x-current-path") as string
   const account = await getCurrentUser()
-  if (!account) {
-    redirect(`/login?redirect=${encodeURIComponent(pathname)}`)
-  }
-  const canWrite = await hasPermission(write)
-  console.log("can write " + canWrite)
   const resource = getResource(account?.language)
+  const permission = await authorize(1)
+  if (!hasPrivilege(permission, read)) {
+    logForbidden(account)
+    return <Error title={resource.error_403_title} message={resource.error_403_message} />
+  }
 
   const { id } = await params
   const service = getUserService()
@@ -30,6 +26,39 @@ export default async function UserForm({ params }: { params: Promise<{ id: strin
       logger.warn(`User not found: ${id}`)
       return <Error title={resource.error_404_title} message={resource.error_404_message} />
     }
+
+    const canWrite = hasPrivilege(permission, write)
+    if (!canWrite) {
+      return (
+        <form id="userForm" name="userForm" className="form" noValidate={true}>
+          <header>
+            <h2>{resource.user}</h2>
+          </header>
+          <div>
+            <dl className="data-list row">
+              <dt className="col s6 l3">{resource.user_id}</dt>
+              <dd className="col s6 l9">{user.userId}</dd>
+              <dt className="col s6 l3">{resource.username}</dt>
+              <dd className="col s6 l9">{user.username}</dd>
+              <dt className="col s6 l3">{resource.display_name}</dt>
+              <dd className="col s6 l9">{user.displayName}</dd>
+              <dt className="col s6 l3">{resource.gender}</dt>
+              <dd className="col s6 l9">{user.gender === Gender.Male ? resource.male : resource.female}</dd>
+              <dt className="col s6 l3">{resource.phone}</dt>
+              <dd className="col s6 l9">{formatPhone(user?.phone)}</dd>
+              <dt className="col s6 l3">{resource.email}</dt>
+              <dd className="col s6 l9">{user.email}</dd>
+            </dl>
+          </div>
+          <footer>
+            <BackButton type="submit" id="closeBtn" name="closeBtn">
+              {resource.close}
+            </BackButton>
+          </footer>
+        </form>
+      )
+    }
+
     return (
       <form id="userForm" name="userForm" className="form" noValidate={true} data-required-error={resource.error_required}>
         <header>
@@ -141,7 +170,7 @@ export default async function UserForm({ params }: { params: Promise<{ id: strin
       </form>
     )
   } catch (err) {
-    logger.error(`Error at ${pathname}: ${toString(err)}`)
+    logError(err)
     return <Error title={resource.error_500_title} message={resource.error_500_message} />
   }
 }

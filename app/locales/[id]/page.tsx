@@ -2,22 +2,20 @@ import { BackButton } from "@components/client"
 import { Error } from "@components/error"
 import { Input, integerOnBlur, integerOnFocus, SubmitButton } from "@components/form"
 import { getCurrentUser } from "@lib/account"
-import { logger, toString } from "@lib/logger"
+import { authorize, hasPrivilege } from "@lib/authorizor"
+import { logError, logForbidden, logger } from "@lib/logger"
 import { getResource } from "@resources"
 import { getLocaleService } from "@service/locale"
-import { getLocale, usLocale } from "locale-service"
-import { headers } from "next/headers"
-import { redirect } from "next/navigation"
+import { read, write } from "web-one"
 
 export default async function LocaleForm({ params }: { params: Promise<{ id: string }> }) {
-  const headerList = await headers()
-  const pathname = headerList.get("x-current-path") as string
   const account = await getCurrentUser()
-  if (!account) {
-    redirect(`/login?redirect=${encodeURIComponent(pathname)}`)
-  }
-  const locale = getLocale(account?.language) || usLocale
   const resource = getResource(account?.language)
+  const permission = await authorize(1)
+  if (!hasPrivilege(permission, read)) {
+    logForbidden(account)
+    return <Error title={resource.error_403_title} message={resource.error_403_message} />
+  }
 
   const { id } = await params
   const service = getLocaleService()
@@ -27,6 +25,59 @@ export default async function LocaleForm({ params }: { params: Promise<{ id: str
       logger.warn(`Locale not found: ${id}`)
       return <Error title={resource.error_404_title} message={resource.error_404_message} />
     }
+
+    const canWrite = hasPrivilege(permission, write)
+    if (!canWrite) {
+      return (
+        <form id="currencyForm" name="currencyForm" className="form" noValidate={true}>
+          <header>
+            <h2>{resource.currency}</h2>
+          </header>
+          <div>
+            <dl className="data-list row">
+              <dt className="col s6 m3 l2 xl2">{resource.locale_code}</dt>
+              <dd className="col s6 m3 l4 xl2">{locale.code}</dd>
+              <dt className="col s6 m3 l2 xl2">{resource.locale_name}</dt>
+              <dd className="col s6 m3 l4 xl2">{locale.name}</dd>
+              <dt className="col s6 m3 l2 xl2">{resource.locale_native_name}</dt>
+              <dd className="col s6 m3 l4 xl2">{locale.nativeName}</dd>
+              <dt className="col s6 m3 l2 xl2">{resource.country_code}</dt>
+              <dd className="col s6 m3 l4 xl2">{locale.countryCode}</dd>
+              <dt className="col s6 m3 l2 xl2">{resource.country_name}</dt>
+              <dd className="col s6 m3 l4 xl2">{locale.countryName}</dd>
+              <dt className="col s6 m3 l2 xl2">{resource.country_native_name}</dt>
+              <dd className="col s6 m3 l4 xl2">{locale.nativeCountryName}</dd>
+              <hr />
+              <dt className="col s6 m3 l2 xl2">{resource.decimal_separator}</dt>
+              <dd className="col s6 m3 l4 xl2">{locale.decimalSeparator}</dd>
+              <dt className="col s6 m3 l2 xl2">{resource.group_separator}</dt>
+              <dd className="col s6 m3 l4 xl2">{locale.groupSeparator}</dd>
+              <dt className="col s6 m3 l2 xl2">{resource.currency_pattern}</dt>
+              <dd className="col s6 m3 l4 xl2">{locale.currencyPattern}</dd>
+              <hr />
+              <dt className="col s6 m3 l2 xl2">{resource.currency_code}</dt>
+              <dd className="col s6 m3 l4 xl2">{locale.currencyCode}</dd>
+              <dt className="col s6 m3 l2 xl2">{resource.currency_symbol}</dt>
+              <dd className="col s6 m3 l4 xl2">{locale.currencySymbol}</dd>
+              <dt className="col s6 m3 l2 xl2">{resource.currency_decimal_digits}</dt>
+              <dd className="col s6 m3 l4 xl2">{locale.currencyDecimalDigits}</dd>
+              <dt className="col s6 m3 l2 xl2">{resource.currency_sample}</dt>
+              <dd className="col s6 m3 l4 xl2">{locale.currencySample}</dd>
+              <dt className="col s6 m3 l2 xl2">{resource.date_format}</dt>
+              <dd className="col s6 m3 l4 xl2">{locale.dateFormat}</dd>
+              <dt className="col s6 m3 l2 xl2">{resource.first_day_of_week}</dt>
+              <dd className="col s6 m3 l4 xl2">{locale.firstDayOfWeek}</dd>
+            </dl>
+          </div>
+          <footer>
+            <BackButton type="submit" id="closeBtn" name="closeBtn">
+              {resource.close}
+            </BackButton>
+          </footer>
+        </form>
+      )
+    }
+
     return (
       <form
         id="currencyForm"
@@ -221,7 +272,7 @@ export default async function LocaleForm({ params }: { params: Promise<{ id: str
       </form>
     )
   } catch (err) {
-    logger.error(`Error at ${pathname}: ${toString(err)}`)
+    logError(err)
     return <Error title={resource.error_500_title} message={resource.error_500_message} />
   }
 }
