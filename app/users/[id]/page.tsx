@@ -3,12 +3,13 @@ import { formatText } from "@components/client-script"
 import { Error } from "@components/error"
 import { Input, phoneOnFocus, SubmitButton } from "@components/form"
 import { getCurrentUser } from "@lib/account"
+import { hasPermission } from "@lib/authorizor"
 import { logger, toString } from "@lib/logger"
 import { email, Gender, getResource, Status } from "@resources"
 import { getUserService } from "@service/user"
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
-import { formatPhone } from "web-one"
+import { formatPhone, write } from "web-one"
 
 export default async function UserForm({ params }: { params: Promise<{ id: string }> }) {
   const headerList = await headers()
@@ -17,6 +18,8 @@ export default async function UserForm({ params }: { params: Promise<{ id: strin
   if (!account) {
     redirect(`/login?redirect=${encodeURIComponent(pathname)}`)
   }
+  const canWrite = await hasPermission(write)
+  console.log("can write " + canWrite)
   const resource = getResource(account?.language)
 
   const { id } = await params

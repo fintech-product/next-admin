@@ -5,6 +5,7 @@ export function proxy(request: NextRequest) {
   // Add a new header x-current-path which passes the path to downstream components
   const headers = new Headers(request.headers)
   headers.set("x-current-path", request.nextUrl.pathname + request.nextUrl.search)
+  headers.set("x-current-short-path", request.nextUrl.pathname)
 
   const url = new URL(request.url)
   const lang = url.searchParams.get("lang")

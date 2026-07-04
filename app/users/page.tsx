@@ -3,6 +3,7 @@ import { Pagination } from "@components/pagination"
 import Search from "@components/search"
 import { SortLink } from "@components/sort"
 import { getCurrentUser } from "@lib/account"
+import { hasPermission } from "@lib/authorizor"
 import { logger, toString } from "@lib/logger"
 import { defaultLimit, getResource, getStatusName, limits } from "@resources"
 import { getUserService, UserFilter } from "@service/user"
@@ -10,7 +11,7 @@ import Form from "next/form"
 import { headers } from "next/headers"
 import Link from "next/link"
 import { redirect } from "next/navigation"
-import { buildFilter, buildSortSearch, getOffset, removeLimit, removePage } from "web-one"
+import { buildFilter, buildSortSearch, getOffset, read, removeLimit, removePage } from "web-one"
 
 const fields = ["userId", "username", "email", "displayName", "status"]
 
@@ -21,6 +22,8 @@ export default async function UsersForm({ searchParams }: { searchParams: Promis
   if (!account) {
     redirect(`/login?redirect=${encodeURIComponent(pathname)}`)
   }
+  const canRead = await hasPermission(read)
+  console.log("can read " + canRead)
   const resource = getResource(account?.language)
 
   const query = await searchParams

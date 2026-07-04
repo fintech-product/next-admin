@@ -19,21 +19,21 @@ export const limit = "limit"
 export const email = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,4})$"
 
 export class Gender {
-  static Male = 'M';
-  static Female = 'F';
+  static Male = "M"
+  static Female = "F"
 }
 export class Status {
-  static Draft = 'D';
-  static Submitted = 'S';
-  static Rejected = 'R';
-  static Approved = 'A';
-  static Published = 'P';
-  static Expired = 'E';
-  static RequestToEdit = 'T';
-  static Active = 'A';
-  static Inactive = 'I';
-  static Deativated = 'D';
-  static Deleted = 'D';
+  static Draft = "D"
+  static Submitted = "S"
+  static Rejected = "R"
+  static Approved = "A"
+  static Published = "P"
+  static Expired = "E"
+  static RequestToEdit = "T"
+  static Active = "A"
+  static Inactive = "I"
+  static Deativated = "D"
+  static Deleted = "D"
 }
 export const statusNames: Map<string, string> = new Map([
   ["A", "Active"],
@@ -54,13 +54,13 @@ const en: StringMap = {
   ...commonEN,
   ...authenticationEN,
   ...adminEN,
-  ...countryEN
+  ...countryEN,
 }
 const vi: StringMap = {
   ...commonVI,
   ...authenticationVI,
   ...adminVI,
-  ...countryVI
+  ...countryVI,
 }
 
 export const resources: Resources = {
@@ -68,7 +68,10 @@ export const resources: Resources = {
   vi: vi,
 }
 
-export function getDateFormat(lang?: string): string {
+export function getDateFormat(lang?: string, dateFormat?: string): string {
+  if (dateFormat) {
+    return dateFormat
+  }
   if (!lang) {
     return usLocale.dateFormat
   }
