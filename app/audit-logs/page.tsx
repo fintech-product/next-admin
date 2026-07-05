@@ -21,7 +21,6 @@ export default async function AuditLogsForm({ searchParams }: { searchParams: Pr
     logForbidden(account)
     return <Error title={resource.error_403_title} message={resource.error_403_message} />
   }
-  const dateFormat = getDateFormat(account?.language, account?.dateFormat)
 
   const query = await searchParams
   const filter = buildFilter<AuditLogFilter>(query, defaultLimit)
@@ -33,6 +32,8 @@ export default async function AuditLogsForm({ searchParams }: { searchParams: Pr
     const limitSearch = removeLimit(query)
     const sort = buildSortSearch(query, fields, filter.sort)
     const offset = getOffset(filter.limit, filter.page)
+
+    const dateFormat = getDateFormat(account?.language, account?.dateFormat)
 
     return (
       <div>
