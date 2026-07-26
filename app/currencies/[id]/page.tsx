@@ -1,7 +1,7 @@
 import { BackButton } from "@components/client"
 import { formatText } from "@components/client-script"
 import { Error } from "@components/error"
-import { Input, integerOnBlur, integerOnFocus, SubmitButton } from "@components/form"
+import { digitOnKeyDown, Input, integerOnBlur, integerOnFocus, SubmitButton } from "@components/form"
 import { getCurrentUser } from "@lib/account"
 import { authorize, hasPrivilege } from "@lib/authorizor"
 import { logError, logForbidden, logger } from "@lib/logger"
@@ -113,6 +113,7 @@ export default async function CurrencyForm({ params }: { params: Promise<{ id: s
               max={3}
               onFocus={integerOnFocus}
               onBlur={integerOnBlur}
+              onKeyDown={digitOnKeyDown}
               placeholder={resource.currency_decimal_digits}
             />
           </label>

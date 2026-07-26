@@ -1,6 +1,6 @@
 import { BackButton } from "@components/client"
 import { Error } from "@components/error"
-import { Input, integerOnBlur, integerOnFocus, SubmitButton } from "@components/form"
+import { digitOnKeyDown, Input, integerOnBlur, integerOnFocus, SubmitButton } from "@components/form"
 import { getCurrentUser } from "@lib/account"
 import { authorize, hasPrivilege } from "@lib/authorizor"
 import { logError, logForbidden, logger } from "@lib/logger"
@@ -163,6 +163,7 @@ export default async function LocaleForm({ params }: { params: Promise<{ id: str
               maxLength={1}
               min={1}
               max={7}
+              onKeyDown={digitOnKeyDown}
               onFocus={integerOnFocus}
               onBlur={integerOnBlur}
               required={true}
@@ -241,6 +242,7 @@ export default async function LocaleForm({ params }: { params: Promise<{ id: str
               maxLength={1}
               min={0}
               max={3}
+              onKeyDown={digitOnKeyDown}
               onFocus={integerOnFocus}
               onBlur={integerOnBlur}
               placeholder={resource.currency_decimal_digits}
@@ -258,6 +260,7 @@ export default async function LocaleForm({ params }: { params: Promise<{ id: str
               maxLength={1}
               min={0}
               max={3}
+              onKeyDown={digitOnKeyDown}
               onFocus={integerOnFocus}
               onBlur={integerOnBlur}
               placeholder={resource.currency_pattern}
