@@ -111,9 +111,9 @@ export default async function CurrencyForm({ params }: { params: Promise<{ id: s
               maxLength={1}
               min={0}
               max={3}
+              onKeyDown={digitOnKeyDown}
               onFocus={integerOnFocus}
               onBlur={integerOnBlur}
-              onKeyDown={digitOnKeyDown}
               placeholder={resource.currency_decimal_digits}
             />
           </label>
