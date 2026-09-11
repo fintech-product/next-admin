@@ -62,7 +62,7 @@ export function ClientLink({ href, className, children }: { href: string; classN
 }
 export function ClientNav({ href, children }: { href: string; children: ReactNode }) {
   const pathname = usePathname()
-  const isActive = pathname === href
+  const isActive = pathname.startsWith(href)
   return <li className={isActive ? "active" : ""}>{children}</li>
 }
 

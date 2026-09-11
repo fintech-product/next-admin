@@ -5,6 +5,7 @@ import {
   addClass,
   addErrorMessage,
   addRequiredError,
+  alertError,
   checkMax,
   checkMin,
   decode,
@@ -19,6 +20,7 @@ import {
   getIntegerError,
   getLabel,
   getRequiredError,
+  hideLoading,
   integerKeyDown,
   isValidPattern,
   normalizeInteger,
@@ -28,7 +30,10 @@ import {
   removeClasses,
   removeError,
   removeSeparators,
+  showConfirm,
   showFormError,
+  showLoading,
+  toast,
   validateForm,
 } from "./client-script"
 
@@ -39,14 +44,17 @@ interface SubmitProps {
   className?: string
   children?: ReactNode
   api: string
+  confirmMessage: string
+  successMessage: string
+  networkError: string
+  parsingError: string
 }
 
-export function SubmitButton({ type, id, name, className, children, api }: SubmitProps) {
+export function SubmitButton({ type, id, name, className, children, api, confirmMessage, successMessage, networkError, parsingError }: SubmitProps) {
   const onClick = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
     const target = e.target as HTMLButtonElement
     const form = target.form
-
     if (form) {
       const valid = validateForm(form)
       if (!valid) {
@@ -54,26 +62,35 @@ export function SubmitButton({ type, id, name, className, children, api }: Submi
       } else {
         const body = decode(form)
         console.log("submit body" + JSON.stringify(body))
-
-        const res = await fetch(api, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
+        showConfirm(confirmMessage, () => {
+          showLoading()
+          fetch(api, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          })
+            .then((res) => {
+              if (res.ok) {
+                toast(successMessage)
+              } else {
+                if (res.status === 422) {
+                  res
+                    .json()
+                    .then((data) => {
+                      console.log(JSON.stringify(data))
+                      if (Array.isArray(data)) {
+                        showFormError(form, data)
+                      }
+                    })
+                    .catch((err) => alertError(parsingError))
+                }
+              }
+            })
+            .catch((err) => alertError(networkError))
+            .finally(() => {
+              hideLoading()
+            })
         })
-
-        if (res.ok) {
-          alert("Save successfully")
-        } else {
-          if (res.status === 422) {
-            const data = await res.json()
-            console.log(JSON.stringify(data))
-            if (Array.isArray(data)) {
-              showFormError(form, data)
-            } else {
-              alert("Data validation failed at server")
-            }
-          }
-        }
       }
     } else {
       e.preventDefault()

@@ -6,30 +6,45 @@ import { getCurrentUser } from "@lib/account"
 import { authorize, hasPrivilege } from "@lib/authorizor"
 import { logError, logForbidden, logger } from "@lib/logger"
 import { getResource, Status } from "@resources"
-import { getCurrencyService } from "@service/currency"
+import { Currency, getCurrencyService } from "@service/currency"
 import { getLocale, usLocale } from "locale-service"
 import { read, write } from "web-one"
 
+function createCurrency(): Currency {
+  return {
+    code: "",
+    symbol: "",
+    decimalDigits: 2,
+    status: Status.Active,
+  }
+}
+
 export default async function CurrencyForm({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const newMode = id === "new"
   const account = await getCurrentUser()
   const resource = getResource(account?.language)
   const permission = await authorize(1)
-  if (!hasPrivilege(permission, read)) {
+  const canRead = hasPrivilege(permission, read)
+  const canWrite = hasPrivilege(permission, write)
+
+  if (!canRead || (newMode && !canWrite)) {
     logForbidden(account)
     return <Error title={resource.error_403_title} message={resource.error_403_message} />
   }
   const locale = getLocale(account?.language) || usLocale
 
-  const { id } = await params
   const service = getCurrencyService()
   try {
-    const currency = await service.load(id)
-    if (!currency) {
-      logger.warn(`Currency not found: ${id}`)
-      return <Error title={resource.error_404_title} message={resource.error_404_message} />
+    let currency: Currency | null = createCurrency()
+    if (!newMode) {
+      currency = await service.load(id)
+      if (!currency) {
+        logger.warn(`Currency not found: ${id}`)
+        return <Error title={resource.error_404_title} message={resource.error_404_message} />
+      }
     }
 
-    const canWrite = hasPrivilege(permission, write)
     if (!canWrite) {
       return (
         <form id="currencyForm" name="currencyForm" className="form" noValidate={true}>
@@ -81,7 +96,8 @@ export default async function CurrencyForm({ params }: { params: Promise<{ id: s
               id="code"
               name="code"
               defaultValue={currency.code}
-              maxLength={100}
+              readOnly={!newMode}
+              maxLength={3}
               required={true}
               requiredError={formatText(resource.error_required, resource.currency_code)}
               placeholder={resource.currency_code}
@@ -132,7 +148,16 @@ export default async function CurrencyForm({ params }: { params: Promise<{ id: s
           </label>
         </div>
         <footer>
-          <SubmitButton type="submit" id="btnSubmit" name="btnSubmit" api="/api/currencies">
+          <SubmitButton
+            type="submit"
+            id="btnSubmit"
+            name="btnSubmit"
+            api={`/api/currencies/${id}`}
+            confirmMessage={resource.msg_confirm_save}
+            successMessage={resource.msg_save_success}
+            parsingError={resource.error_response_body}
+            networkError={resource.error_network}
+          >
             {resource.submit}
           </SubmitButton>
         </footer>

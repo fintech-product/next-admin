@@ -6,28 +6,38 @@ import { getCurrentUser } from "@lib/account"
 import { authorize, hasPrivilege } from "@lib/authorizor"
 import { logError, logForbidden, logger } from "@lib/logger"
 import { email, Gender, getResource, Status } from "@resources"
-import { getUserService } from "@service/user"
+import { getUserService, User } from "@service/user"
 import { formatPhone, read, write } from "web-one"
 
+function createUser(): User {
+  const user = { status: Status.Active }
+  return user as User
+}
 export default async function UserForm({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const newMode = id === "new"
   const account = await getCurrentUser()
   const resource = getResource(account?.language)
   const permission = await authorize(1)
-  if (!hasPrivilege(permission, read)) {
+  const canRead = hasPrivilege(permission, read)
+  const canWrite = hasPrivilege(permission, write)
+
+  if (!canRead || (newMode && !canWrite)) {
     logForbidden(account)
     return <Error title={resource.error_403_title} message={resource.error_403_message} />
   }
 
-  const { id } = await params
   const service = getUserService()
   try {
-    const user = await service.load(id)
-    if (!user) {
-      logger.warn(`User not found: ${id}`)
-      return <Error title={resource.error_404_title} message={resource.error_404_message} />
+    let user: User | null = createUser()
+    if (!newMode) {
+      user = await service.load(id)
+      if (!user) {
+        logger.warn(`User not found: ${id}`)
+        return <Error title={resource.error_404_title} message={resource.error_404_message} />
+      }
     }
 
-    const canWrite = hasPrivilege(permission, write)
     if (!canWrite) {
       return (
         <form id="userForm" name="userForm" className="form" noValidate={true}>
@@ -73,6 +83,7 @@ export default async function UserForm({ params }: { params: Promise<{ id: strin
               id="userId"
               name="userId"
               defaultValue={user.userId}
+              readOnly={!newMode}
               maxLength={40}
               required={true}
               requiredError={formatText(resource.error_required, resource.user_id)}
@@ -163,7 +174,16 @@ export default async function UserForm({ params }: { params: Promise<{ id: strin
           </div>
         </label>
         <footer>
-          <SubmitButton type="submit" id="btnSubmit" name="btnSubmit" api="/api/users">
+          <SubmitButton
+            type="submit"
+            id="btnSubmit"
+            name="btnSubmit"
+            api={`/api/users/${id}`}
+            confirmMessage={resource.msg_confirm_save}
+            successMessage={resource.msg_save_success}
+            parsingError={resource.error_response_body}
+            networkError={resource.error_network}
+          >
             {resource.submit}
           </SubmitButton>
         </footer>

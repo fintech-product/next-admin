@@ -5,30 +5,40 @@ import { getCurrentUser } from "@lib/account"
 import { authorize, hasPrivilege } from "@lib/authorizor"
 import { logError, logForbidden, logger } from "@lib/logger"
 import { getResource, Status } from "@resources"
-import { getCountryService } from "@service/country"
+import { Country, getCountryService } from "@service/country"
 import { getLocale, usLocale } from "locale-service"
 import { read, write } from "web-one"
 
+function createCountry(): Country {
+  const country = { status: Status.Active }
+  return country as Country
+}
 export default async function CountryForm({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const newMode = id === "new"
   const account = await getCurrentUser()
   const resource = getResource(account?.language)
   const permission = await authorize(1)
-  if (!hasPrivilege(permission, read)) {
+  const canRead = hasPrivilege(permission, read)
+  const canWrite = hasPrivilege(permission, write)
+
+  if (!canRead || (newMode && !canWrite)) {
     logForbidden(account)
     return <Error title={resource.error_403_title} message={resource.error_403_message} />
   }
   const locale = getLocale(account?.language) || usLocale
 
-  const { id } = await params
   const service = getCountryService()
   try {
-    const country = await service.load(id)
-    if (!country) {
-      logger.warn(`Country not found: ${id}`)
-      return <Error title={resource.error_404_title} message={resource.error_404_message} />
+    let country: Country | null = createCountry()
+    if (!newMode) {
+      country = await service.load(id)
+      if (!country) {
+        logger.warn(`Country not found: ${id}`)
+        return <Error title={resource.error_404_title} message={resource.error_404_message} />
+      }
     }
 
-    const canWrite = hasPrivilege(permission, write)
     if (!canWrite) {
       return (
         <form id="countryForm" name="countryForm" className="form" noValidate={true}>
@@ -97,6 +107,7 @@ export default async function CountryForm({ params }: { params: Promise<{ id: st
               id="countryCode"
               name="countryCode"
               defaultValue={country.countryCode}
+              readOnly={!newMode}
               maxLength={2}
               required={true}
               placeholder={resource.country_code}
@@ -237,7 +248,16 @@ export default async function CountryForm({ params }: { params: Promise<{ id: st
           </label>
         </div>
         <footer>
-          <SubmitButton type="submit" id="btnSubmit" name="btnSubmit" api="/api/countries">
+          <SubmitButton
+            type="submit"
+            id="btnSubmit"
+            name="btnSubmit"
+            api={`/api/countries/${id}`}
+            confirmMessage={resource.msg_confirm_save}
+            successMessage={resource.msg_save_success}
+            parsingError={resource.error_response_body}
+            networkError={resource.error_network}
+          >
             {resource.submit}
           </SubmitButton>
         </footer>

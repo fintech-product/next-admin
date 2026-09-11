@@ -5,25 +5,36 @@ import { getCurrentUser } from "@lib/account"
 import { authorize, hasPrivilege } from "@lib/authorizor"
 import { logError, logForbidden, logger } from "@lib/logger"
 import { getResource } from "@resources"
-import { getLocaleService } from "@service/locale"
+import { getLocaleService, Locale } from "@service/locale"
 import { read, write } from "web-one"
 
+function createLocale(): Locale {
+  const locale = {}
+  return locale as Locale
+}
 export default async function LocaleForm({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const newMode = id === "new"
   const account = await getCurrentUser()
   const resource = getResource(account?.language)
   const permission = await authorize(1)
-  if (!hasPrivilege(permission, read)) {
+  const canRead = hasPrivilege(permission, read)
+  const canWrite = hasPrivilege(permission, write)
+
+  if (!canRead || (newMode && !canWrite)) {
     logForbidden(account)
     return <Error title={resource.error_403_title} message={resource.error_403_message} />
   }
 
-  const { id } = await params
   const service = getLocaleService()
   try {
-    const locale = await service.load(id)
-    if (!locale) {
-      logger.warn(`Locale not found: ${id}`)
-      return <Error title={resource.error_404_title} message={resource.error_404_message} />
+    let locale: Locale | null = createLocale()
+    if (!newMode) {
+      locale = await service.load(id)
+      if (!locale) {
+        logger.warn(`Locale not found: ${id}`)
+        return <Error title={resource.error_404_title} message={resource.error_404_message} />
+      }
     }
 
     const canWrite = hasPrivilege(permission, write)
@@ -97,7 +108,16 @@ export default async function LocaleForm({ params }: { params: Promise<{ id: str
         <div className="row">
           <label className="col s12 m6 required">
             {resource.locale_code}
-            <Input type="text" id="code" name="code" defaultValue={locale.code} maxLength={11} required={true} placeholder={resource.locale_code} />
+            <Input
+              type="text"
+              id="code"
+              name="code"
+              defaultValue={locale.code}
+              readOnly={!newMode}
+              maxLength={11}
+              required={true}
+              placeholder={resource.locale_code}
+            />
           </label>
           <label className="col s12 m6 required">
             {resource.locale_name}
@@ -268,7 +288,16 @@ export default async function LocaleForm({ params }: { params: Promise<{ id: str
           </label>
         </div>
         <footer>
-          <SubmitButton type="submit" id="btnSubmit" name="btnSubmit" api="/api/locales">
+          <SubmitButton
+            type="submit"
+            id="btnSubmit"
+            name="btnSubmit"
+            api={`/api/locales/${id}`}
+            confirmMessage={resource.msg_confirm_save}
+            successMessage={resource.msg_save_success}
+            parsingError={resource.error_response_body}
+            networkError={resource.error_network}
+          >
             {resource.submit}
           </SubmitButton>
         </footer>
