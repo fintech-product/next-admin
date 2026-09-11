@@ -1,6 +1,6 @@
 import { BackButton } from "@components/client"
 import { Error } from "@components/error"
-import { digitOnKeyDown, Input, integerOnBlur, integerOnFocus, SubmitButton } from "@components/form"
+import { digitOnKeyDown, Input, SubmitButton } from "@components/form"
 import { getCurrentUser } from "@lib/account"
 import { authorize, hasPrivilege } from "@lib/authorizor"
 import { logError, logForbidden, logger } from "@lib/logger"
@@ -203,15 +203,13 @@ export default async function CountryForm({ params }: { params: Promise<{ id: st
               type="tel"
               id="currencyDecimalDigits"
               name="currencyDecimalDigits"
-              data-type="integer"
+              dataType="integer"
               className="text-right"
               defaultValue={country.currencyDecimalDigits}
               maxLength={1}
               min={0}
               max={3}
               onKeyDown={digitOnKeyDown}
-              onFocus={integerOnFocus}
-              onBlur={integerOnBlur}
               placeholder={resource.currency_decimal_digits}
             />
           </label>
@@ -221,15 +219,13 @@ export default async function CountryForm({ params }: { params: Promise<{ id: st
               type="tel"
               id="currencyPattern"
               name="currencyPattern"
-              data-type="integer"
+              dataType="integer"
               className="text-right"
               defaultValue={country.currencyPattern}
               maxLength={1}
               min={0}
               max={3}
               onKeyDown={digitOnKeyDown}
-              onFocus={integerOnFocus}
-              onBlur={integerOnBlur}
               placeholder={resource.currency_pattern}
             />
           </label>

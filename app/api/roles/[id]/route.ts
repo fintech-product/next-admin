@@ -5,7 +5,7 @@ import { getRoleService, Role, roleModel } from "@service/role"
 import { NextRequest, NextResponse } from "next/server"
 import { validate } from "validation-core"
 
-export async function POST(req: NextRequest) {
+export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
   const account = await getCurrentUser()
   if (!account) {
     return new NextResponse("Require authentication", {
@@ -13,6 +13,7 @@ export async function POST(req: NextRequest) {
       headers: { "Content-Type": "text/plain" },
     })
   }
+  const { id } = await params
   const resource = getResource(account.language)
   const role: Role = await req.json()
 
@@ -23,7 +24,12 @@ export async function POST(req: NextRequest) {
 
   const service = getRoleService()
   try {
-    const res = await service.update(role)
+    let res: number
+    if (id === "new") {
+      res = await service.create(role)
+    } else {
+      res = await service.update(role)
+    }
     const status = res > 0 ? 200 : 410
     return NextResponse.json(res, { status })
   } catch (err) {

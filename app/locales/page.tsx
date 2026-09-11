@@ -1,16 +1,16 @@
 import { Error } from "@components/error"
-import { Input } from "@components/form"
+import { digitOnKeyDown, Input } from "@components/form"
 import { Pagination } from "@components/pagination"
 import Search from "@components/search"
 import { SortLink } from "@components/sort"
 import { getCurrentUser } from "@lib/account"
-import { hasPermission } from "@lib/authorizor"
+import { authorize, hasPrivilege } from "@lib/authorizor"
 import { logError, logForbidden } from "@lib/logger"
 import { defaultLimit, getResource, limits } from "@resources"
 import { getLocaleService, LocaleFilter } from "@service/locale"
 import Form from "next/form"
 import Link from "next/link"
-import { buildFilter, buildSortSearch, getOffset, read, removeLimit, removePage } from "web-one"
+import { buildFilter, buildSortSearch, getOffset, read, removeLimit, removePage, write } from "web-one"
 
 const fields = [
   "code",
@@ -33,7 +33,9 @@ const fields = [
 export default async function LocalesForm({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const account = await getCurrentUser()
   const resource = getResource(account?.language)
-  const canRead = await hasPermission(read)
+  const permission = await authorize()
+  const canRead = hasPrivilege(permission, read)
+  const canWrite = hasPrivilege(permission, write)
   if (!canRead) {
     logForbidden(account)
     return <Error title={resource.error_403_title} message={resource.error_403_message} />
@@ -54,6 +56,7 @@ export default async function LocalesForm({ searchParams }: { searchParams: Prom
       <div>
         <header>
           <h2>{resource.locales}</h2>
+          {canWrite && <Link href="/locales/new" id="newBtn" className="btn-new" prefetch={false} />}
         </header>
         <div className="main-body">
           <Form id="localesForm" name="localesForm" className="form" noValidate={true} action="/locales">
@@ -100,40 +103,43 @@ export default async function LocalesForm({ searchParams }: { searchParams: Prom
               </label>
               <label className="col s6 m3">
                 {resource.currency_decimal_digits}
-                <input
+                <Input
                   type="tel"
                   id="currencyDecimalDigits"
                   name="currencyDecimalDigits"
-                  data-type="integer"
+                  dataType="integer"
                   className="text-right"
                   defaultValue={filter.currencyDecimalDigits}
                   maxLength={1}
+                  onKeyDown={digitOnKeyDown}
                   placeholder={resource.currency_decimal_digits}
                 />
               </label>
               <label className="col s6 m3">
                 {resource.currency_pattern}
-                <input
+                <Input
                   type="tel"
                   id="currencyPattern"
                   name="currencyPattern"
-                  data-type="integer"
+                  dataType="integer"
                   className="text-right"
                   defaultValue={filter.currencyPattern}
                   maxLength={1}
+                  onKeyDown={digitOnKeyDown}
                   placeholder={resource.currency_pattern}
                 />
               </label>
               <label className="col s6 m3">
                 {resource.first_day_of_week}
-                <input
+                <Input
                   type="text"
                   id="groupSeparator"
                   name="groupSeparator"
-                  data-type="integer"
+                  dataType="integer"
                   className="text-right"
                   defaultValue={filter.groupSeparator}
                   maxLength={1}
+                  onKeyDown={digitOnKeyDown}
                   placeholder={resource.first_day_of_week}
                 />
               </label>

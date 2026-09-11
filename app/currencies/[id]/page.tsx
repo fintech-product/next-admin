@@ -122,6 +122,7 @@ export default async function CurrencyForm({ params }: { params: Promise<{ id: s
               type="tel"
               id="decimalDigits"
               name="decimalDigits"
+              dataType="integer"
               className="right-align"
               defaultValue={currency.decimalDigits}
               maxLength={1}

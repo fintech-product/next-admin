@@ -263,8 +263,6 @@ export default async function LocaleForm({ params }: { params: Promise<{ id: str
               min={0}
               max={3}
               onKeyDown={digitOnKeyDown}
-              onFocus={integerOnFocus}
-              onBlur={integerOnBlur}
               placeholder={resource.currency_decimal_digits}
             />
           </label>
@@ -281,8 +279,6 @@ export default async function LocaleForm({ params }: { params: Promise<{ id: str
               min={0}
               max={3}
               onKeyDown={digitOnKeyDown}
-              onFocus={integerOnFocus}
-              onBlur={integerOnBlur}
               placeholder={resource.currency_pattern}
             />
           </label>

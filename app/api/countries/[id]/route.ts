@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { validate } from "validation-core"
 import { isSuccessful } from "web-one"
 
-export async function POST(req: NextRequest) {
+export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
   const account = await getCurrentUser()
   if (!account) {
     return new NextResponse("Require authentication", {
@@ -14,6 +14,7 @@ export async function POST(req: NextRequest) {
       headers: { "Content-Type": "text/plain" },
     })
   }
+  const { id } = await params
   const resource = getResource(account.language)
   const country: Country = await req.json()
 
@@ -24,7 +25,12 @@ export async function POST(req: NextRequest) {
 
   const service = getCountryService()
   try {
-    const res = await service.update(country)
+    let res: number
+    if (id === "new") {
+      res = await service.create(country)
+    } else {
+      res = await service.update(country)
+    }
     const status = isSuccessful(res) ? 200 : 410
     return NextResponse.json(res, { status })
   } catch (err) {

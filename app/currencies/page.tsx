@@ -1,22 +1,25 @@
 import { Error } from "@components/error"
+import { digitOnKeyDown, Input } from "@components/form"
 import { Pagination } from "@components/pagination"
 import Search from "@components/search"
 import { SortLink } from "@components/sort"
 import { getCurrentUser } from "@lib/account"
-import { hasPermission } from "@lib/authorizor"
+import { authorize, hasPrivilege } from "@lib/authorizor"
 import { logError, logForbidden } from "@lib/logger"
 import { defaultLimit, getResource, getStatusName, limits } from "@resources"
 import { CurrencyFilter, getCurrencyService } from "@service/currency"
 import Form from "next/form"
 import Link from "next/link"
-import { buildFilter, buildSortSearch, getOffset, read, removeLimit, removePage } from "web-one"
+import { buildFilter, buildSortSearch, getOffset, read, removeLimit, removePage, write } from "web-one"
 
 const fields = ["code", "symbol", "decimalDigits", "status"]
 
 export default async function CurrenciesForm({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const account = await getCurrentUser()
   const resource = getResource(account?.language)
-  const canRead = await hasPermission(read)
+  const permission = await authorize()
+  const canRead = hasPrivilege(permission, read)
+  const canWrite = hasPrivilege(permission, write)
   if (!canRead) {
     logForbidden(account)
     return <Error title={resource.error_403_title} message={resource.error_403_message} />
@@ -37,6 +40,7 @@ export default async function CurrenciesForm({ searchParams }: { searchParams: P
       <div>
         <header>
           <h2>{resource.currencies}</h2>
+          {canWrite && <Link href="/currencies/new" id="newBtn" className="btn-new" prefetch={false} />}
         </header>
         <div className="main-body">
           <Form id="currenciesForm" name="currenciesForm" className="form" noValidate={true} action="/currencies">
@@ -57,14 +61,15 @@ export default async function CurrenciesForm({ searchParams }: { searchParams: P
             <section className="row search-group advance-search" hidden>
               <label className="col s12 m6 l4 xl6">
                 {resource.currency_decimal_digits}
-                <input
+                <Input
                   type="tel"
                   id="decimalDigits"
                   name="decimalDigits"
-                  data-type="integer"
+                  dataType="integer"
                   className="text-right"
                   defaultValue={filter.decimalDigits}
                   maxLength={1}
+                  onKeyDown={digitOnKeyDown}
                   placeholder={resource.currency_decimal_digits}
                 />
               </label>
