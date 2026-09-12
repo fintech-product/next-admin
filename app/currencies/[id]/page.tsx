@@ -156,8 +156,11 @@ export default async function CurrencyForm({ params }: { params: Promise<{ id: s
             api={`/api/currencies/${id}`}
             confirmMessage={resource.msg_confirm_save}
             successMessage={resource.msg_save_success}
+            forbiddenError={resource.error_403}
             parsingError={resource.error_response_body}
             networkError={resource.error_network}
+            conflictError={resource.error_409}
+            goneError={resource.error_410}
           >
             {resource.submit}
           </SubmitButton>

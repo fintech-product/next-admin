@@ -48,9 +48,26 @@ interface SubmitProps {
   successMessage: string
   networkError: string
   parsingError: string
+  conflictError: string
+  goneError: string
+  forbiddenError: string
 }
 
-export function SubmitButton({ type, id, name, className, children, api, confirmMessage, successMessage, networkError, parsingError }: SubmitProps) {
+export function SubmitButton({
+  type,
+  id,
+  name,
+  className,
+  children,
+  api,
+  confirmMessage,
+  successMessage,
+  networkError,
+  parsingError,
+  conflictError,
+  goneError,
+  forbiddenError,
+}: SubmitProps) {
   const onClick = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
     const target = e.target as HTMLButtonElement
@@ -83,6 +100,12 @@ export function SubmitButton({ type, id, name, className, children, api, confirm
                       }
                     })
                     .catch((err) => alertError(parsingError))
+                } else if (res.status === 409) {
+                  alertError(conflictError)
+                } else if (res.status === 410) {
+                  alertError(goneError)
+                } else if (res.status === 403) {
+                  alertError(forbiddenError)
                 }
               }
             })
