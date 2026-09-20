@@ -1,5 +1,5 @@
 import { Attributes, StringMap } from "onecore"
-import { param } from "pg-extension"
+import { param } from "postgres-kit"
 import { buildMap, buildSort, buildToInsert, buildToInsertBatch, buildToUpdate, DB, SearchRepository, Statement } from "sql-core"
 import { User, UserFilter, userModel, UserRepository } from "./user"
 

@@ -7,12 +7,8 @@ import { logError, logForbidden, logger } from "@lib/logger"
 import { getResource, Status } from "@resources"
 import { Country, getCountryService } from "@service/country"
 import { getLocale, usLocale } from "locale-service"
-import { read, write } from "web-one"
+import { create, read, write } from "web-one"
 
-function createCountry(): Country {
-  const country = { status: Status.Active }
-  return country as Country
-}
 export default async function CountryForm({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const newMode = id === "new"
@@ -30,7 +26,7 @@ export default async function CountryForm({ params }: { params: Promise<{ id: st
 
   const service = getCountryService()
   try {
-    let country: Country | null = createCountry()
+    let country: Country | null = create<Country>(Status.apply)
     if (!newMode) {
       country = await service.load(id)
       if (!country) {

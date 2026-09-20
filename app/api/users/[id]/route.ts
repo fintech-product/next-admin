@@ -15,7 +15,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       headers: { "Content-Type": "text/plain" },
     })
   }
-  const canWrite = hasPermission(write, 1)
+  const canWrite = await hasPermission(write, 1)
   if (!canWrite) {
     return new NextResponse("You have no permission to create or update user", {
       status: 403,

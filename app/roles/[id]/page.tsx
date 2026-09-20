@@ -7,12 +7,8 @@ import { authorize, hasPrivilege } from "@lib/authorizor"
 import { logError, logForbidden, logger } from "@lib/logger"
 import { getResource, Status } from "@resources"
 import { getRoleService, Role } from "@service/role"
-import { read, write } from "web-one"
+import { create, read, write } from "web-one"
 
-function createRole(): Role {
-  const role = { status: Status.Active }
-  return role as Role
-}
 export default async function RoleForm({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const newMode = id === "new"
@@ -29,7 +25,7 @@ export default async function RoleForm({ params }: { params: Promise<{ id: strin
 
   const service = getRoleService()
   try {
-    let role: Role | null = createRole()
+    let role: Role | null = create<Role>(Status.Active)
     if (!newMode) {
       role = await service.load(id)
       if (!role) {

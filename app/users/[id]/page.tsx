@@ -7,12 +7,8 @@ import { authorize, hasPrivilege } from "@lib/authorizor"
 import { logError, logForbidden, logger } from "@lib/logger"
 import { email, Gender, getResource, Status } from "@resources"
 import { getUserService, User } from "@service/user"
-import { formatPhone, read, write } from "web-one"
+import { create, formatPhone, read, write } from "web-one"
 
-function createUser(): User {
-  const user = { status: Status.Active }
-  return user as User
-}
 export default async function UserForm({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const newMode = id === "new"
@@ -29,7 +25,7 @@ export default async function UserForm({ params }: { params: Promise<{ id: strin
 
   const service = getUserService()
   try {
-    let user: User | null = createUser()
+    let user: User | null = create<User>(Status.Active)
     if (!newMode) {
       user = await service.load(id)
       if (!user) {

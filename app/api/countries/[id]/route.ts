@@ -15,7 +15,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       headers: { "Content-Type": "text/plain" },
     })
   }
-  const canWrite = hasPermission(write, 1)
+  const canWrite = await hasPermission(write, 1)
   if (!canWrite) {
     return new NextResponse("You have no permission to create or update country", {
       status: 403,
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       return NextResponse.json(res, { status })
     }
   } catch (err) {
-    logger.error(`Error at POST /countries: ${toString(err)}`)
+    logger.error(`Error at POST /countries/${id}: ${toString(err)}`)
     return new NextResponse("Internal Server Error", {
       status: 500,
       headers: { "Content-Type": "text/plain" },

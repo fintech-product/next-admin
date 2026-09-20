@@ -6,12 +6,8 @@ import { authorize, hasPrivilege } from "@lib/authorizor"
 import { logError, logForbidden, logger } from "@lib/logger"
 import { getResource } from "@resources"
 import { getLocaleService, Locale } from "@service/locale"
-import { read, write } from "web-one"
+import { create, read, write } from "web-one"
 
-function createLocale(): Locale {
-  const locale = {}
-  return locale as Locale
-}
 export default async function LocaleForm({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const newMode = id === "new"
@@ -28,7 +24,7 @@ export default async function LocaleForm({ params }: { params: Promise<{ id: str
 
   const service = getLocaleService()
   try {
-    let locale: Locale | null = createLocale()
+    let locale: Locale | null = create<Locale>()
     if (!newMode) {
       locale = await service.load(id)
       if (!locale) {
