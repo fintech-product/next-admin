@@ -23,6 +23,7 @@ export class Gender {
   static Female = "F"
 }
 export class Status {
+  static New = Status.New
   static Draft = "D"
   static Submitted = "S"
   static Rejected = "R"

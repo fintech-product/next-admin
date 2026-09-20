@@ -11,7 +11,7 @@ import { create, read, write } from "web-one"
 
 export default async function RoleForm({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const newMode = id === "new"
+  const newMode = id === Status.New
   const account = await getCurrentUser()
   const resource = getResource(account?.language)
   const permission = await authorize(1)

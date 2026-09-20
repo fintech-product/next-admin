@@ -137,7 +137,7 @@ export class SqlUserRepository extends SearchRepository<User, UserFilter> implem
   }
   update(user: User): Promise<number> {
     const stmts: Statement[] = []
-    const stmt = buildToUpdate(user, "users", userModel, this.db.param)
+    const stmt = buildToUpdate(user, "users", userModel, this.db.param, this.primaryKeys)
     let firstSuccess = false
     if (stmt.query) {
       stmts.push(stmt)

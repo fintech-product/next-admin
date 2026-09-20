@@ -8,20 +8,11 @@ import { logError, logForbidden, logger } from "@lib/logger"
 import { getResource, Status } from "@resources"
 import { Currency, getCurrencyService } from "@service/currency"
 import { getLocale, usLocale } from "locale-service"
-import { read, write } from "web-one"
-
-function createCurrency(): Currency {
-  return {
-    code: "",
-    symbol: "",
-    decimalDigits: 2,
-    status: Status.Active,
-  }
-}
+import { create, read, write } from "web-one"
 
 export default async function CurrencyForm({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const newMode = id === "new"
+  const newMode = id === Status.New
   const account = await getCurrentUser()
   const resource = getResource(account?.language)
   const permission = await authorize(1)
@@ -36,7 +27,7 @@ export default async function CurrencyForm({ params }: { params: Promise<{ id: s
 
   const service = getCurrencyService()
   try {
-    let currency: Currency | null = createCurrency()
+    let currency: Currency | null = create<Currency>(Status.Active, "status", 2, "decimalDigits")
     if (!newMode) {
       currency = await service.load(id)
       if (!currency) {

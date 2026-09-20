@@ -11,7 +11,7 @@ import { create, read, write } from "web-one"
 
 export default async function CountryForm({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const newMode = id === "new"
+  const newMode = id === Status.New
   const account = await getCurrentUser()
   const resource = getResource(account?.language)
   const permission = await authorize(1)
@@ -26,7 +26,7 @@ export default async function CountryForm({ params }: { params: Promise<{ id: st
 
   const service = getCountryService()
   try {
-    let country: Country | null = create<Country>(Status.apply)
+    let country: Country | null = create<Country>(Status.Active)
     if (!newMode) {
       country = await service.load(id)
       if (!country) {

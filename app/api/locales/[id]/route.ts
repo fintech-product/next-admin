@@ -1,7 +1,7 @@
 import { getCurrentUser } from "@lib/account"
 import { hasPermission } from "@lib/authorizor"
 import { logger, toString } from "@lib/logger"
-import { getResource } from "@resources"
+import { getResource, Status } from "@resources"
 import { getLocaleService, Locale, localeModel } from "@service/locale"
 import { NextRequest, NextResponse } from "next/server"
 import { validate } from "validation-core"
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
   const service = getLocaleService()
   try {
-    if (id === "new") {
+    if (id === Status.New) {
       const res = await service.create(locale)
       const status = isSuccessful(res) ? 200 : 409
       return NextResponse.json(res, { status })

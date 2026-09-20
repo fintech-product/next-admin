@@ -4,13 +4,13 @@ import { digitOnKeyDown, Input, integerOnBlur, integerOnFocus, SubmitButton } fr
 import { getCurrentUser } from "@lib/account"
 import { authorize, hasPrivilege } from "@lib/authorizor"
 import { logError, logForbidden, logger } from "@lib/logger"
-import { getResource } from "@resources"
+import { getResource, Status } from "@resources"
 import { getLocaleService, Locale } from "@service/locale"
 import { create, read, write } from "web-one"
 
 export default async function LocaleForm({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const newMode = id === "new"
+  const newMode = id === Status.New
   const account = await getCurrentUser()
   const resource = getResource(account?.language)
   const permission = await authorize(1)
