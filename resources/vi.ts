@@ -19,11 +19,17 @@ export const vi = {
   modern_menu: "Modern menu",
   language: "Ngôn ngữ",
 
+  read: "Đọc",
+  write: "Ghi",
+  delete: "Xóa",
+  approve: "Duyệt",
+  reject: "Từ chối",
   search: "Tìm kiếm",
   submit: "Submit",
   save: "Save",
   cancel: "Cancel",
   close: "Close",
+
   msg_no_data_found: "No data found.",
   msg_search_result_sequence: "Items {0} to {1}.",
   msg_search_result_page_sequence: "Items {0} to {1} of {2}. Page {3} of {4}.",

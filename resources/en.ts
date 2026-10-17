@@ -19,6 +19,11 @@ export const en = {
   modern_menu: "Modern menu",
   language: "Language",
 
+  read: "Read",
+  write: "Write",
+  delete: "Delete",
+  approve: "Approve",
+  reject: "Reject",
   search: "Search",
   submit: "Submit",
   save: "Save",
