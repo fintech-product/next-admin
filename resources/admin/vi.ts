@@ -24,6 +24,8 @@ export const vi = {
   role_system_role: "Vai trò hệ thống",
   module: "Chức năng",
 
+  check_all: "Chọn tất cả",
+
   all_privileges: "Tất cả quyền",
 
   role_assigned_users: "Người dùng được gán",
