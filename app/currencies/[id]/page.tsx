@@ -1,6 +1,7 @@
 import { BackButton } from "@components/client"
 import { Error } from "@components/error"
-import { digitOnKeyDown, Input, integerOnBlur, integerOnFocus, SubmitButton } from "@components/form"
+import { Input, SubmitButton } from "@components/form"
+import { digitOnKeyDown, integerOnBlur, integerOnFocus } from "@components/number-input"
 import { formatText } from "@components/ui"
 import { getCurrentUser } from "@lib/account"
 import { authorize, hasPrivilege } from "@lib/authorizor"

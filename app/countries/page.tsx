@@ -1,5 +1,6 @@
 import { Error } from "@components/error"
-import { digitOnKeyDown, Input } from "@components/form"
+import { Input } from "@components/form"
+import { digitOnKeyDown } from "@components/number-input"
 import { Pagination } from "@components/pagination"
 import Search from "@components/search"
 import { SortLink } from "@components/sort"

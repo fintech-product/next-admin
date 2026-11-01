@@ -1,6 +1,7 @@
 import { BackButton } from "@components/client"
 import { Error } from "@components/error"
-import { digitOnKeyDown, Input, SubmitButton } from "@components/form"
+import { Input, SubmitButton } from "@components/form"
+import { digitOnKeyDown } from "@components/number-input"
 import { getCurrentUser } from "@lib/account"
 import { authorize, hasPrivilege } from "@lib/authorizor"
 import { logError, logForbidden, logger } from "@lib/logger"
